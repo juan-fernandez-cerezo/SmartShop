@@ -1,121 +1,104 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { supabase } from './lib/supabaseClient';
+import { SignUp } from './components/SignUp';
+import { Login } from './components/Login';
+import type { Session } from '@supabase/supabase-js';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Importamos el archivo CSS y las imágenes
+import './App.css';
+import logoImg from './assets/logo.png';
+// fondo.png se importa directamente en el archivo CSS
 
+// Componente para la pantalla principal (Home)
+function HomePage({ setView }: { setView: (view: 'login' | 'signup' | 'shop') => void }) {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
+    <div className="home-container">
+      {/* Sección del Logo */}
+      <div className="logo-container">
+        <img src={logoImg} alt="SmartShop Logo" className="logo-image" />
+        <span className="smartshop-text">SmartShop</span>
+      </div>
+
+      {/* Recuadro Central Azul */}
+      <div className="central-box">
+        <h2>¡COMIENZA TU COMPRA AHORA!</h2>
+        <h2>¡MÁS RÁPIDO Y FÁCIL!</h2>
+
+        <button className="action-button start-shopping-btn" onClick={() => setView('shop')}>
+          Empezar a comprar
         </button>
-      </section>
 
-      <div className="ticks"></div>
+        <button className="action-button login-register-btn" onClick={() => setView('login')}>
+          Login/Registro
+        </button>
+      </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Nota al pie */}
+      <p className="footer-note">
+        *Sin iniciar sesión no podrás guardar tus listas de la compra
+      </p>
+    </div>
+  );
 }
 
-export default App
+// Componente Principal
+function App() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [view, setView] = useState<'home' | 'login' | 'signup' | 'shop'>('home');
+
+  useEffect(() => {
+    // Obtener sesión inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Escuchar cambios en la autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Si HAY sesión, mostramos el Dashboard (provisional)
+  if (session) {
+    return (
+      <div style={{ padding: '40px' }}>
+        <h1>Bienvenido a SmartShop</h1>
+        <p>Sesión iniciada como: {session.user.email}</p>
+        <button onClick={() => supabase.auth.signOut()}>Cerrar Sesión</button>
+      </div>
+    );
+  }
+
+  // Si NO hay sesión, mostramos la pantalla correspondiente
+  switch (view) {
+    case 'home':
+      return <HomePage setView={setView} />;
+    case 'login':
+      return (
+        <div style={{ padding: '40px' }}>
+          <Login />
+          <button onClick={() => setView('home')} style={{ marginTop: '10px' }}>Volver a Home</button>
+        </div>
+      );
+    case 'signup':
+      return (
+        <div style={{ padding: '40px' }}>
+          <SignUp />
+          <button onClick={() => setView('home')} style={{ marginTop: '10px' }}>Volver a Home</button>
+        </div>
+      );
+    case 'shop':
+      return (
+        <div style={{ padding: '40px' }}>
+          <p>Sección "Empezar a comprar" (próximamente)</p>
+          <button onClick={() => setView('home')}>Volver a Home</button>
+        </div>
+      );
+    default:
+      return <HomePage setView={setView} />;
+  }
+}
+
+export default App;
