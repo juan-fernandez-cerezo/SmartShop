@@ -1,76 +1,101 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import logoImg from '../assets/logo.png';
+import './SignUp.css';
 
-export const SignUp = () => {
+interface SignUpProps {
+  setView: (v: 'home' | 'login' | 'signup' | 'shop') => void;
+}
+
+export const SignUp = ({ setView }: SignUpProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'Consumer' | 'Supermarket'>('Consumer');
   
-  // Extra fields based on role
+  // Campos dinámicos
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [marketName, setMarketName] = useState('');
   const [location, setLocation] = useState('');
 
-  const handleSignUp = async () => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { 
-        role,
-        first_name: role === 'Consumer' ? firstName : undefined,
-        last_name: role === 'Consumer' ? lastName : undefined,
-        market_name: role === 'Supermarket' ? marketName : undefined,
-        location: role === 'Supermarket' ? location : undefined,
-      },
-      emailRedirectTo: window.location.origin
-    }
-  });
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { 
+          role: role,
+          first_name: role === 'Consumer' ? firstName : undefined,
+          last_name: role === 'Consumer' ? lastName : undefined,
+          market_name: role === 'Supermarket' ? marketName : undefined,
+          location: role === 'Supermarket' ? location : undefined,
+        },
+        emailRedirectTo: window.location.origin
+      }
+    });
 
-  if (error) {
-    // Supabase returns specific error messages
-    if (error.message.includes("already registered") || error.status === 422) {
-      alert("This account already exists. Try logging in instead!");
+    if (error) {
+      alert(error.message);
     } else {
-      alert("Error: " + error.message);
+      alert("¡Registro casi listo! Revisa tu email para verificar la cuenta.");
+      setView('login');
     }
-    return;
-  }
-
-  // Check if user is returned but identity is empty (another way Supabase signals existing users)
-  if (data.user && data.user.identities?.length === 0) {
-    alert("This email is already taken. Please use a different one or log in.");
-    return;
-  }
-
-  alert("Success! Please check your email to verify your account.");
-};
+  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '300px' }}>
-      <h2>Create Account</h2>
-      <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+    <div className="split-screen">
+      <div className="left-side"></div>
       
-      <select value={role} onChange={(e) => setRole(e.target.value as any)}>
-        <option value="Consumer">I am a Customer</option>
-        <option value="Supermarket">I am a Supermarket</option>
-      </select>
+      <div className="right-side">
+        <div className="auth-card">
+          <img src={logoImg} alt="SmartShop Logo" className="card-logo" />
+          <h2>Crear Cuenta</h2>
+          
+          <form onSubmit={handleSignUp}>
+            <div className="input-group">
+              <label>Tipo de usuario</label>
+              <select value={role} onChange={(e) => setRole(e.target.value as any)}>
+                <option value="Consumer">Soy Cliente</option>
+                <option value="Supermarket">Soy un Supermercado</option>
+              </select>
+            </div>
 
-      {role === 'Consumer' ? (
-        <>
-          <input placeholder="First Name" onChange={(e) => setFirstName(e.target.value)} />
-          <input placeholder="Last Name" onChange={(e) => setLastName(e.target.value)} />
-        </>
-      ) : (
-        <>
-          <input placeholder="Supermarket Name" onChange={(e) => setMarketName(e.target.value)} />
-          <input placeholder="Location Address" onChange={(e) => setLocation(e.target.value)} />
-        </>
-      )}
+            <div className="input-group">
+              <input type="email" placeholder="Email" required onChange={(e) => setEmail(e.target.value)} />
+            </div>
 
-      <button onClick={handleSignUp}>Register</button>
+            <div className="input-group">
+              <input type="password" placeholder="Contraseña" required onChange={(e) => setPassword(e.target.value)} />
+            </div>
+
+            {role === 'Consumer' ? (
+              <div className="input-row">
+                <input placeholder="Nombre" required onChange={(e) => setFirstName(e.target.value)} />
+                <input placeholder="Apellidos" required onChange={(e) => setLastName(e.target.value)} />
+              </div>
+            ) : (
+              <>
+                <div className="input-group">
+                  <input placeholder="Nombre del Supermercado" required onChange={(e) => setMarketName(e.target.value)} />
+                </div>
+                <div className="input-group">
+                  <input placeholder="Dirección / Ubicación" required onChange={(e) => setLocation(e.target.value)} />
+                </div>
+              </>
+            )}
+            
+            <button type="submit" className="btn-auth">Registrarse</button>
+          </form>
+          
+          <div className="auth-footer">
+            ¿Ya tienes cuenta? <a href="#" onClick={() => setView('login')}>Inicia sesión</a>
+          </div>
+          
+
+        </div>
+      </div>
     </div>
   );
 };

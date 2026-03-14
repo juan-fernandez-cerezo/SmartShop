@@ -1,0 +1,127 @@
+/* src/components/SignUp.css */
+
+.split-screen {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  margin: 0;
+  padding: 0;
+}
+
+.left-side {
+  flex: 1;
+  background-image: url('../assets/fondo.png'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.right-side {
+  flex: 1;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto; /* Permite scroll interno si hay muchos campos en pantallas pequeñas */
+}
+
+.auth-card {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 450px; /* Un poco más ancho para los campos dobles */
+  text-align: center;
+}
+
+.card-logo {
+  width: 70px;
+  height: auto;
+  margin-bottom: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.auth-card h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.input-row {
+  display: flex;
+  gap: 15px;      /* Espacio entre Nombre y Apellidos */
+  width: 100%;    /* Asegura que la fila ocupe todo el ancho */
+  margin-bottom: 15px;
+}
+
+.input-row input {
+  flex: 1;        /* Esto hace que ambos inputs midan lo mismo y se expandan */
+  width: 100%;    /* Refuerza el ancho */
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: white !important; /* Fuerza el fondo blanco */
+  color: #333;    /* Color de texto oscuro */
+  box-sizing: border-box;
+}
+
+/* También asegúrate de que el select y los otros inputs tengan fondo blanco */
+.input-group input, 
+.input-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: white !important;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.input-group label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+  margin-left: 2px;
+}
+
+
+
+.btn-auth {
+  width: 100%;
+  padding: 14px;
+  background-color: #00cc66; /* Verde para diferenciar que es Registro */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.auth-footer {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.auth-footer a {
+  color: #4285f4;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+@media (max-width: 800px) {
+  .left-side { display: none; }
+}

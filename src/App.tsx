@@ -78,14 +78,14 @@ function App() {
     case 'login':
       return (
         <div style={{ padding: '40px' }}>
-          <Login />
+          <Login setView={setView} />
           <button onClick={() => setView('home')} style={{ marginTop: '10px' }}>Volver a Home</button>
         </div>
       );
     case 'signup':
       return (
         <div style={{ padding: '40px' }}>
-          <SignUp />
+          <SignUp setView={setView} />
           <button onClick={() => setView('home')} style={{ marginTop: '10px' }}>Volver a Home</button>
         </div>
       );
