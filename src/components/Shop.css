@@ -1,0 +1,201 @@
+/* --- CONTENEDOR PRINCIPAL --- */
+.shop-container {
+  background-color: #d3d3d3; /* Gris claro de fondo */
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px 0; /* Espacio arriba y abajo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto; /* Permite el scroll vertical */
+}
+
+/* --- CABECERA Y LOGO --- */
+.shop-header {
+  width: 100%;
+  display: flex;
+  /* Esto empuja los elementos a los extremos opuestos */
+  justify-content: space-between; 
+  /* Ajustamos el padding para que no toquen los bordes de la pantalla */
+  padding: 20px 40px; 
+  box-sizing: border-box;
+}
+
+/* El estilo de .btn-nav ya lo tienes, se aplicará a ambos por igual */
+.btn-nav {
+  background: white !important;
+  color: #333 !important;
+  border: 2px solid #333 !important;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-nav:hover {
+  transform: scale(1.05);
+}
+
+.shop-logo-main {
+  width: 120px; /* REDUCIDO de 150px a 120px */
+  margin-top: -50px; /* SUBIDO MÁS (margen negativo mayor) */
+  margin-bottom: 25px; /* Reducido el margen inferior para compactar */
+  position: relative; /* Para el z-index */
+  z-index: 5; /* Por debajo de los botones si solapan */
+}
+
+.shop-title {
+  color: #f39237; /* Naranja del texto CHOOSE YOUR SUPERMARKET */
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 25px; /* Reducido para compactar */
+  text-align: center;
+  font-size: 1.4rem; /* Ligeramente más pequeño */
+}
+
+/* --- CONTENEDOR DE FILTROS --- */
+.filters-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  max-width: 1200px;
+  margin-bottom: 40px;
+  flex-wrap: wrap; /* Importante para móviles */
+}
+
+.filter-select, 
+.search-bar-container input {
+  padding: 12px 15px;
+  border-radius: 12px;
+  border: 2px solid #333;
+  background-color: white;
+  color: #333;
+  font-size: 16px;
+  min-width: 280px; /* Tamaño consistente */
+  box-sizing: border-box;
+  outline: none;
+}
+
+.search-bar-container {
+  margin: 0 !important; /* Resetea margenes anteriores */
+}
+
+/* --- REJILLA DE SUPERMERCADOS (GRID) --- */
+.supermarkets-grid {
+  display: grid;
+  /* Crea columnas automáticas de mínimo 260px. 
+     Esto permite 4 o 5 por fila en pantallas grandes de forma fluida */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+  gap: 30px; /* Espacio de separación entre tarjetas */
+  width: 90%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-bottom: 50px; /* Espacio al final para el footer */
+}
+
+/* --- TARJETA DE SUPERMERCADO --- */
+.market-card {
+  background-color: #1a5f7a; /* Azul oscuro */
+  color: white;
+  padding: 25px;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+  width: 100%; /* Se adapta al ancho de la columna del grid */
+}
+
+.market-logo-placeholder {
+  background: white;
+  width: 100%;
+  height: 80px; /* Altura fija para uniformidad */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.market-logo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.no-image-text {
+  color: #333;
+  font-weight: bold;
+}
+
+.market-info h3 {
+  text-decoration: underline;
+  margin-bottom: 5px;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.market-info p {
+  margin-bottom: 15px;
+  font-weight: 300;
+}
+
+.btn-choose {
+  background: white !important;
+  color: #333 !important;
+  border: 3px solid #00cc66 !important; /* Borde verde */
+  padding: 10px 40px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: auto; /* Empuja el botón al fondo si hay poco texto */
+  transition: background-color 0.2s;
+}
+
+.btn-choose:hover {
+  background-color: #f0f0f0 !important;
+}
+
+/* --- FOOTER / BOTÓN VOLVER --- */
+.go-home-footer {
+  margin-top: 40px;
+  padding: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+}
+
+/* --- RESPONSIVE (MÓVILES) --- */
+@media (max-width: 600px) {
+  .filters-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .filter-select, 
+  .search-bar-container input {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .supermarkets-grid {
+    grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+    width: 85%;
+  }
+
+  .shop-title {
+    font-size: 1.2rem;
+    padding: 0 10px;
+  }
+}

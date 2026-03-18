@@ -1,0 +1,66 @@
+.upload-container {
+  background-color: #f0f7f9;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 700px;
+}
+
+.upload-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: #1a3a5a;
+}
+
+.upload-dropzone {
+  border: 2px dashed #b5d1e8;
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  background-color: #fff;
+}
+
+.upload-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.btn-select {
+  display: inline-block;
+  background-color: #2563eb;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.map-preview {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+}
+
+.btn-confirm-upload {
+  width: 100%;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}

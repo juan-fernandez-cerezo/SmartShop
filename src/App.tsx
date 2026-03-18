@@ -2,102 +2,118 @@ import { useEffect, useState } from 'react';
 import { supabase } from './lib/supabaseClient';
 import { SignUp } from './components/SignUp';
 import { Login } from './components/Login';
+import { ForgotPassword } from './components/ForgotPassword';
+import { UpdatePassword } from './components/UpdatePassword';
+import { Shop } from './components/Shop';
+import { Profile } from './components/Profile';
+import { ManageSupermarkets } from './components/ManageSupermarkets';
+import { RegisterMarket } from './components/RegisterMarket';
+import { UploadMap } from './components/UploadMap';
+import { UploadProducts } from './components/UploadProducts';
 import type { Session } from '@supabase/supabase-js';
 
-// Importamos el archivo CSS y las imágenes
 import './App.css';
 import logoImg from './assets/logo.png';
-// fondo.png se importa directamente en el archivo CSS
 
-// Componente para la pantalla principal (Home)
-function HomePage({ setView }: { setView: (view: 'login' | 'signup' | 'shop') => void }) {
+export type ViewState = 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password' | 'profile' | 'manage-supermarkets' | 'register-market' | 'upload-map' | 'upload-products';
+
+function HomePage({ setView }: { setView: (view: ViewState) => void }) {
   return (
     <div className="home-container">
-      {/* Sección del Logo */}
       <div className="logo-container">
         <img src={logoImg} alt="SmartShop Logo" className="logo-image" />
         <span className="smartshop-text">SmartShop</span>
       </div>
-
-      {/* Recuadro Central Azul */}
       <div className="central-box">
-        <h2>¡COMIENZA TU COMPRA AHORA!</h2>
-        <h2>¡MÁS RÁPIDO Y FÁCIL!</h2>
-
-        <button className="action-button start-shopping-btn" onClick={() => setView('shop')}>
-          Empezar a comprar
+        <h2>¡BEGIN YOUR SHOP NOW!</h2>
+        <h2>¡FASTER & EASIER!</h2>
+        <button className="btn-home start-shopping" onClick={() => setView('shop')}>
+          Begin Shopping
         </button>
-
-        <button className="action-button login-register-btn" onClick={() => setView('login')}>
-          Login/Registro
+        <button className="btn-home login-register" onClick={() => setView('login')}>
+          Login/Register
         </button>
       </div>
-
-      {/* Nota al pie */}
-      <p className="footer-note">
-        *Sin iniciar sesión no podrás guardar tus listas de la compra
-      </p>
+      <p className="footer-note">*Sin iniciar sesión no podrás guardar tus listas de la compra</p>
     </div>
   );
 }
 
-// Componente Principal
 function App() {
   const [session, setSession] = useState<Session | null>(null);
-  const [view, setView] = useState<'home' | 'login' | 'signup' | 'shop'>('home');
+  const [view, setView] = useState<ViewState>('home');
+  // Esta variable guardará desde dónde venía el usuario antes de ir a Login
+  const [prevView, setPrevView] = useState<ViewState>('home');
+
+  // Función para cambiar de vista guardando la anterior
+  const navigateTo = (newView: ViewState) => {
+    if (newView === 'login') {
+      setPrevView(view); // Guardamos si veníamos de 'shop' o 'home'
+    }
+    setView(newView);
+  };
 
   useEffect(() => {
-    // Obtener sesión inicial
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
 
-    // Escuchar cambios en la autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      setSession(currentSession);
+
+      if (event === 'SIGNED_IN') {
+        // LÓGICA DE REDIRECCIÓN INFALIBLE
+        if (prevView === 'shop') {
+          setView('shop');
+        } else {
+          setView('profile');
+        }
+      }
+
+      if (event === 'SIGNED_OUT') {
+        setView('home');
+      }
+
+      if (event === "PASSWORD_RECOVERY") {
+        setView('reset-password');
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [prevView]); // Escuchamos prevView para que la lógica de SIGNED_IN sea precisa
 
-  // Si HAY sesión, mostramos el Dashboard (provisional)
-  if (session) {
-    return (
-      <div style={{ padding: '40px' }}>
-        <h1>Bienvenido a SmartShop</h1>
-        <p>Sesión iniciada como: {session.user.email}</p>
-        <button onClick={() => supabase.auth.signOut()}>Cerrar Sesión</button>
-      </div>
-    );
-  }
+  // --- RENDERING ---
+  if (view === 'reset-password') return <UpdatePassword />;
 
-  // Si NO hay sesión, mostramos la pantalla correspondiente
   switch (view) {
     case 'home':
-      return <HomePage setView={setView} />;
-    case 'login':
-      return (
-        <div style={{ padding: '40px' }}>
-          <Login setView={setView} />
-          <button onClick={() => setView('home')} style={{ marginTop: '10px' }}>Volver a Home</button>
-        </div>
-      );
-    case 'signup':
-      return (
-        <div style={{ padding: '40px' }}>
-          <SignUp setView={setView} />
-          <button onClick={() => setView('home')} style={{ marginTop: '10px' }}>Volver a Home</button>
-        </div>
-      );
+      return <HomePage setView={navigateTo} />;
     case 'shop':
-      return (
-        <div style={{ padding: '40px' }}>
-          <p>Sección "Empezar a comprar" (próximamente)</p>
-          <button onClick={() => setView('home')}>Volver a Home</button>
-        </div>
-      );
+      return <Shop setView={navigateTo} session={session} />;
+    case 'login':
+      return <Login setView={navigateTo} />;
+    case 'signup':
+      return <SignUp setView={navigateTo} />;
+    case 'forgot-password':
+      return <ForgotPassword setView={navigateTo} />;
+    case 'profile':
+      if (!session) return <Login setView={navigateTo} />;
+      return <Profile setView={navigateTo} session={session} />;
+    case 'manage-supermarkets':
+      // Protegemos la ruta: solo para dueños de supermercados logueados
+      if (!session || session.user.user_metadata.role !== 'Supermarket') {
+        setView('profile');
+        return null;
+      }
+      return <ManageSupermarkets setView={setView} session={session} />;
+    case 'register-market':
+      return <RegisterMarket setView={setView} session={session} />;
+    case 'upload-map':
+      return <UploadMap setView={setView} session={session} />;
+    case 'upload-products':
+        return <UploadProducts setView={setView} session={session} />;
     default:
-      return <HomePage setView={setView} />;
+      return <HomePage setView={navigateTo} />;
   }
 }
 

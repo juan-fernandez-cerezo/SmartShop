@@ -1,0 +1,102 @@
+.upload-products-container {
+  background-color: #f0f4f8;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.upload-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.upload-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.upload-header h2 {
+  color: #1a365d;
+  margin: 0;
+  font-size: 22px;
+}
+
+.format-box {
+  background: #ebf8ff;
+  border-left: 4px solid #3182ce;
+  padding: 15px;
+  text-align: left;
+  margin-bottom: 25px;
+  border-radius: 4px;
+}
+
+.format-box code {
+  font-size: 12px;
+  color: #2c5282;
+}
+
+.dropzone {
+  border: 2px dashed #cbd5e0;
+  border-radius: 8px;
+  padding: 40px;
+  margin-bottom: 30px;
+  transition: all 0.3s;
+}
+
+.dropzone.active {
+  border-color: #48bb78;
+  background-color: #f0fff4;
+}
+
+.file-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.btn-select {
+  background: #1a365d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+.btn-confirm {
+  width: 100%;
+  background: #3182ce;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.btn-confirm:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+}
+
+.btn-skip {
+  background: none;
+  border: none;
+  color: #718096;
+  cursor: pointer;
+  text-decoration: underline;
+}

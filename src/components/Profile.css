@@ -1,0 +1,130 @@
+:root {
+  --primary: #1a5f7a;
+  --secondary: #2d9da6;
+  --bg-soft: #f8fafc;
+  --text-main: #334155;
+  --text-light: #64748b;
+  --white: #ffffff;
+}
+
+.profile-container {
+  background-color: var(--bg-soft) !important;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.profile-main-logo {
+  width: 90px;
+  margin-bottom: 30px;
+}
+
+.profile-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.profile-card {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  width: 380px;
+  text-align: center; /* Centramos el contenido interno */
+}
+
+.profile-card h2 {
+  color: var(--primary);
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  border-bottom: 2px solid var(--bg-soft);
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.profile-card label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  margin: 15px 0 5px;
+}
+
+/* Forzamos el estilo de las cajas de info */
+.info-box, .edit-input {
+  background-color: var(--bg-soft) !important;
+  color: var(--text-main) !important;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.edit-input {
+  border: 1px solid var(--secondary);
+  background-color: white !important;
+}
+
+.btn-edit {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 25px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  width: auto; /* Para que no ocupe todo el ancho si no quieres */
+}
+
+.actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.btn-manage {
+  background-color: var(--secondary) !important;
+  color: white !important;
+  border: none;
+  padding: 18px 30px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(45, 157, 166, 0.2);
+}
+
+.btn-logout {
+  background-color: #64748b !important;
+  color: white !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.go-home-footer {
+  margin-top: 40px;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .profile-layout { flex-direction: column; align-items: center; }
+}

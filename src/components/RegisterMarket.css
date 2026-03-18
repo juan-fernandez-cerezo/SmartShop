@@ -1,0 +1,93 @@
+.register-market-bg {
+  background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2000'); /* Imagen de súper genérica */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.register-market-overlay {
+  background: rgba(0, 0, 0, 0.4); /* Capa oscura encima de la imagen */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px); /* Desenfoque de la imagen de fondo */
+}
+
+.register-logo {
+  width: 120px;
+  background: white;
+  border-radius: 50%;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.register-header-blue {
+  background-color: #1a5f7a;
+  color: white;
+  padding: 15px 40px;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-bottom: -5px; /* Para que solape ligeramente con la tarjeta blanca */
+  z-index: 1;
+}
+
+.register-card {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.register-subtitle {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fdfdfd;
+}
+
+.btn-register-confirm {
+  width: 100%;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-back-link {
+  background: none;
+  border: none;
+  color: #666;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}

@@ -3,11 +3,16 @@ import { supabase } from '../lib/supabaseClient';
 import logoImg from '../assets/logo.png';
 import './Login.css';
 
-interface LoginProps {
-  setView: (v: 'home' | 'login' | 'signup' | 'shop') => void;
+
+// Dentro de Login.tsx y SignUp.tsx
+interface ComponentProps {
+  setView: (v: 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password') => void;
 }
 
-export const Login = ({ setView }: LoginProps) => {
+
+
+export const Login = ({ setView }: ComponentProps) => {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,7 +60,7 @@ export const Login = ({ setView }: LoginProps) => {
           
           <div className="login-footer">
             <span>Don't have an account? <a href="#" onClick={() => setView('signup')}>Sign up</a></span>
-            <a href="#">Forgot password</a>
+            <span><a href="#" onClick={() => setView('forgot-password')}>Forgot password?</a></span>
           </div>
           
           <button className="back-home" onClick={() => setView('home')}>

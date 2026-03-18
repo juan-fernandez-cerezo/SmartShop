@@ -97,6 +97,24 @@ html, body {
   transition: background-color 0.3s ease;
 }
 
+.btn-home {
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px; /* Separación entre botones */
+  background-color: white !important; /* Forzar fondo blanco */
+  color: #004a6f !important; /* Texto azul oscuro */
+}
+
+.start-shopping {
+  background-color: #00cc66 !important; /* Verde para el de comprar */
+  color: white !important;
+}
+
 .start-shopping-btn {
   background-color: #00cc66; /* Verde brillante */
   color: white;

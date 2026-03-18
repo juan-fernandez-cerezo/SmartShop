@@ -3,11 +3,13 @@ import { supabase } from '../lib/supabaseClient';
 import logoImg from '../assets/logo.png';
 import './SignUp.css';
 
-interface SignUpProps {
-  setView: (v: 'home' | 'login' | 'signup' | 'shop') => void;
+// Dentro de Login.tsx y SignUp.tsx
+interface ComponentProps {
+  setView: (v: 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password') => void;
 }
 
-export const SignUp = ({ setView }: SignUpProps) => {
+export const SignUp = ({ setView }: ComponentProps) => {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'Consumer' | 'Supermarket'>('Consumer');
@@ -16,7 +18,7 @@ export const SignUp = ({ setView }: SignUpProps) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [marketName, setMarketName] = useState('');
-  const [location, setLocation] = useState('');
+  const [marketSurname, setMarketSurname] = useState('');
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ export const SignUp = ({ setView }: SignUpProps) => {
           first_name: role === 'Consumer' ? firstName : undefined,
           last_name: role === 'Consumer' ? lastName : undefined,
           market_name: role === 'Supermarket' ? marketName : undefined,
-          location: role === 'Supermarket' ? location : undefined,
+          market_Surname: role === 'Supermarket' ? marketSurname : undefined,
         },
         emailRedirectTo: window.location.origin
       }
@@ -55,10 +57,10 @@ export const SignUp = ({ setView }: SignUpProps) => {
           
           <form onSubmit={handleSignUp}>
             <div className="input-group">
-              <label>Tipo de usuario</label>
+              <label>Type of user</label>
               <select value={role} onChange={(e) => setRole(e.target.value as any)}>
-                <option value="Consumer">Soy Cliente</option>
-                <option value="Supermarket">Soy un Supermercado</option>
+                <option value="Consumer">I am a consumer</option>
+                <option value="Supermarket">I am a supermarket personal</option>
               </select>
             </div>
 
@@ -78,20 +80,24 @@ export const SignUp = ({ setView }: SignUpProps) => {
             ) : (
               <>
                 <div className="input-group">
-                  <input placeholder="Nombre del Supermercado" required onChange={(e) => setMarketName(e.target.value)} />
+                  <input placeholder="Name of the Supermarket member" required onChange={(e) => setMarketName(e.target.value)} />
                 </div>
                 <div className="input-group">
-                  <input placeholder="Dirección / Ubicación" required onChange={(e) => setLocation(e.target.value)} />
+                  <input placeholder="Surname of the Supermarket worker" required onChange={(e) => setMarketSurname(e.target.value)} />
                 </div>
               </>
             )}
             
-            <button type="submit" className="btn-auth">Registrarse</button>
+            <button type="submit" className="btn-auth">Register</button>
           </form>
           
           <div className="auth-footer">
-            ¿Ya tienes cuenta? <a href="#" onClick={() => setView('login')}>Inicia sesión</a>
+            Have an account already? <a href="#" onClick={() => setView('login')}>Log in</a>
           </div>
+
+          <button className="back-home" onClick={() => setView('home')}>
+            ← Back to home
+          </button>
           
 
         </div>
