@@ -19,7 +19,7 @@ interface ShopProps {
 export const Shop = ({ setView, session }: ShopProps) => {
   const [markets, setMarkets] = useState<Supermarket[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // --- ESTADOS PARA FILTROS ---
   const [searchTerm, setSearchTerm] = useState(''); // Para Location
   const [selectedName, setSelectedName] = useState('All'); // Para el Dropdown de Name
@@ -30,7 +30,7 @@ export const Shop = ({ setView, session }: ShopProps) => {
       const { data, error } = await supabase
         .from('supermarkets')
         .select('id, name, location, image_url');
-      
+
       if (error) console.error("Error:", error);
       else setMarkets(data || []);
       setLoading(false);
@@ -72,9 +72,9 @@ export const Shop = ({ setView, session }: ShopProps) => {
 
       {/* --- CONTENEDOR DE FILTROS --- */}
       <div className="filters-container">
-        
+
         {/* Desplegable por Nombre */}
-        <select 
+        <select
           className="filter-select"
           value={selectedName}
           onChange={(e) => setSelectedName(e.target.value)}
@@ -86,15 +86,15 @@ export const Shop = ({ setView, session }: ShopProps) => {
 
         {/* Búsqueda por Ubicación */}
         <div className="search-bar-container">
-          <input 
-            type="text" 
-            placeholder="Search by location... 📍" 
+          <input
+            type="text"
+            placeholder="Search by location... 📍"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
-      
+
       <div className="supermarkets-grid">
         {loading ? (
           <p>Cargando...</p>
@@ -108,7 +108,7 @@ export const Shop = ({ setView, session }: ShopProps) => {
                   <span className="no-image-text">{m.name}</span>
                 )}
               </div>
-              
+
               <div className="market-info">
                 <h3>Supermarket Name:</h3>
                 <p>{m.name}</p>

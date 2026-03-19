@@ -22,8 +22,17 @@ export const ManageSupermarkets = ({ setView, session }: { setView: (v: ViewStat
         .select('*')
         .eq('user_id', session.user.id);
 
-      if (error) console.error(error);
-      else setMarkets(data || []);
+      if (error) {
+        console.error(error);
+      } else {
+        const marketsWithStatus: Supermarket[] = (data || []).map((m: any) => ({
+          id: m.id,
+          name: m.name,
+          location: m.location,
+          status: m.status || 'Activo',
+        }));
+        setMarkets(marketsWithStatus);
+      }
       setLoading(false);
     };
 
@@ -35,10 +44,10 @@ export const ManageSupermarkets = ({ setView, session }: { setView: (v: ViewStat
       <div className="manage-header">
         <div>
           <h1>Panel de Gestión</h1>
-          <p style={{color: '#666'}}>Gestiona tus supermercados</p>
+          <p style={{ color: '#666' }}>Gestiona tus supermercados</p>
         </div>
         <button className="btn-new-market" onClick={() => setView('register-market')}>
-        + New Supermarket
+          + New Supermarket
         </button>
       </div>
 
@@ -58,7 +67,7 @@ export const ManageSupermarkets = ({ setView, session }: { setView: (v: ViewStat
       </div>
 
       <div className="table-container">
-        <h2 style={{padding: '20px', margin: 0, fontSize: '18px'}}>Mis Supermercados</h2>
+        <h2 style={{ padding: '20px', margin: 0, fontSize: '18px' }}>Mis Supermercados</h2>
         <table className="markets-table">
           <thead>
             <tr>
@@ -73,7 +82,7 @@ export const ManageSupermarkets = ({ setView, session }: { setView: (v: ViewStat
               <tr><td colSpan={4}>Cargando...</td></tr>
             ) : markets.map(market => (
               <tr key={market.id}>
-                <td style={{fontWeight: '500'}}>{market.name}</td>
+                <td style={{ fontWeight: '500' }}>{market.name}</td>
                 <td>{market.location}</td>
                 <td>
                   <span className={`status-badge ${market.status === 'Borrador' ? 'status-draft' : 'status-active'}`}>
@@ -89,7 +98,7 @@ export const ManageSupermarkets = ({ setView, session }: { setView: (v: ViewStat
         </table>
       </div>
 
-      <p style={{marginTop: '30px', cursor: 'pointer', color: '#2b459a'}} onClick={() => setView('profile')}>
+      <p style={{ marginTop: '30px', cursor: 'pointer', color: '#2b459a' }} onClick={() => setView('profile')}>
         ← Volver al Perfil
       </p>
     </div>
