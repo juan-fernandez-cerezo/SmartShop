@@ -16,7 +16,7 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
     first_name: userMetadata?.first_name || '',
     last_name: userMetadata?.last_name || '',
     market_name: userMetadata?.market_name || '',
-    location: userMetadata?.location || ''
+    market_surname: userMetadata?.market_surname || ''
   });
 
   const handleLogout = async () => {
@@ -38,24 +38,24 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
 
       // 2. Actualizar Tabla de la Base de Datos (Pública)
       let dbError;
-      
+
       if (role === 'Consumer') {
         // Ajustado a tus columnas: 'name' y 'surname'
         // Filtrado por 'user_id' según tu captura de pantalla
         const { error } = await supabase
           .from('consumers')
-          .update({ 
-            name: formData.first_name, 
-            surname: formData.last_name 
+          .update({
+            name: formData.first_name,
+            surname: formData.last_name
           })
           .eq('user_id', authId);
         dbError = error;
       } else {
         const { error } = await supabase
-          .from('supermarkets')
-          .update({ 
-            name: formData.market_name, 
-            location: formData.location 
+          .from('supermarket_staff')
+          .update({
+            first_name: formData.market_name,
+            last_name: formData.market_surname
           })
           .eq('user_id', authId);
         dbError = error;
@@ -67,7 +67,7 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
         alert("¡Perfil actualizado correctamente!");
         setIsEditing(false);
         // Recargamos para que la App lea los nuevos metadatos de la sesión
-        window.location.reload(); 
+        window.location.reload();
       }
     } else {
       setIsEditing(true);
@@ -79,72 +79,72 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
   };
 
   return (
-  <div className="profile-container">
-    <img src={logoImg} className="profile-main-logo" alt="SmartShop" />
-    
-    <div className="profile-layout">
-      <div className="profile-card">
-        <h2>PERFIL</h2>
-        
-        {role === 'Consumer' ? (
-          <div className="name-row" style={{display: 'flex', gap: '10px'}}>
-            <div style={{flex:1}}>
-              <label>Nombre</label>
-              {isEditing ? (
-                <input name="first_name" value={formData.first_name} onChange={handleChange} className="edit-input" />
-              ) : (
-                <div className="info-box">{formData.first_name}</div>
-              )}
+    <div className="profile-container">
+      <img src={logoImg} className="profile-main-logo" alt="SmartShop" />
+
+      <div className="profile-layout">
+        <div className="profile-card">
+          <h2>PERFIL</h2>
+
+          {role === 'Consumer' ? (
+            <div className="name-row">
+              <div className="name-col">
+                <label>Nombre</label>
+                {isEditing ? (
+                  <input name="first_name" value={formData.first_name} onChange={handleChange} className="edit-input" />
+                ) : (
+                  <div className="info-box">{formData.first_name}</div>
+                )}
+              </div>
+              <div className="name-col">
+                <label>Apellidos</label>
+                {isEditing ? (
+                  <input name="last_name" value={formData.last_name} onChange={handleChange} className="edit-input" />
+                ) : (
+                  <div className="info-box">{formData.last_name}</div>
+                )}
+              </div>
             </div>
-            <div style={{flex:1}}>
-              <label>Apellidos</label>
+          ) : (
+            <>
+              <label>Staff member name</label>
               {isEditing ? (
-                <input name="last_name" value={formData.last_name} onChange={handleChange} className="edit-input" />
+                <input name="market_name" value={formData.market_name} onChange={handleChange} className="edit-input" />
               ) : (
-                <div className="info-box">{formData.last_name}</div>
+                <div className="info-box">{formData.market_name}</div>
               )}
-            </div>
-          </div>
-        ) : (
-          <>
-            <label>Establecimiento</label>
-            {isEditing ? (
-              <input name="market_name" value={formData.market_name} onChange={handleChange} className="edit-input" />
-            ) : (
-              <div className="info-box">{formData.market_name}</div>
-            )}
-            
-            <label>Dirección</label>
-            {isEditing ? (
-              <input name="location" value={formData.location} onChange={handleChange} className="edit-input" />
-            ) : (
-              <div className="info-box">{formData.location}</div>
-            )}
-          </>
-        )}
 
-        <label>Email de contacto</label>
-        <div className="info-box" style={{opacity: 0.7}}>{session?.user?.email}</div>
+              <label>Staff member surname</label>
+              {isEditing ? (
+                <input name="market_surname" value={formData.market_surname} onChange={handleChange} className="edit-input" />
+              ) : (
+                <div className="info-box">{formData.market_surname}</div>
+              )}
+            </>
+          )}
 
-        <label>Tipo de Cuenta</label>
-        <div className="info-box" style={{opacity: 0.7}}>{role}</div>
+          <label>Email de contacto</label>
+          <div className="info-box" style={{ opacity: 0.7 }}>{session?.user?.email}</div>
 
-        <button className="btn-edit" onClick={handleSave}>
-          {isEditing ? 'Guardar Cambios' : 'Editar Perfil'}
-        </button>
+          <label>Tipo de Cuenta</label>
+          <div className="info-box" style={{ opacity: 0.7 }}>{role}</div>
+
+          <button className="btn-edit" onClick={handleSave}>
+            {isEditing ? 'Guardar Cambios' : 'Editar Perfil'}
+          </button>
+        </div>
+
+        <div className="actions-section">
+          <button className="btn-manage" onClick={() => role === 'Supermarket' ? setView('manage-supermarkets') : setView('shop')}>
+            📦 Gestionar Tienda
+          </button>
+          <button className="btn-logout" onClick={handleLogout}>Cerrar Sesión</button>
+        </div>
       </div>
 
-      <div className="actions-section">
-        <button className="btn-manage" onClick={() => role === 'Supermarket' ? setView('manage-supermarkets') : setView('shop')}>
-          📦 Gestionar Tienda
-        </button>
-        <button className="btn-logout" onClick={handleLogout}>Cerrar Sesión</button>
+      <div className="go-home-footer" onClick={() => setView('home')}>
+        <span>←</span> VOLVER AL INICIO
       </div>
     </div>
-
-    <div className="go-home-footer" onClick={() => setView('home')}>
-      <span>←</span> VOLVER AL INICIO
-    </div>
-  </div>
-);
+  );
 };

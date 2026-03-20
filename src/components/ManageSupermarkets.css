@@ -1,6 +1,11 @@
 .manage-container {
   background-color: #f8f9fa;
   min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100%;
   padding: 40px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -48,19 +53,29 @@
   flex-direction: column;
 }
 
-.stat-label { color: #6c757d; font-size: 14px; margin-bottom: 5px; }
-.stat-value { font-size: 24px; font-weight: bold; color: #333; }
+.stat-label {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
 
 /* Tabla de Supermercados */
 .table-container {
   background: white;
   border-radius: 12px;
   border: 1px solid #e0e0e0;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .markets-table {
   width: 100%;
+  min-width: 500px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -88,8 +103,16 @@
   font-size: 12px;
   font-weight: 500;
 }
-.status-active { background: #e6fcf5; color: #0ca678; }
-.status-draft { background: #fff4e6; color: #f76707; }
+
+.status-active {
+  background: #e6fcf5;
+  color: #0ca678;
+}
+
+.status-draft {
+  background: #fff4e6;
+  color: #f76707;
+}
 
 /* Botones de acción */
 .action-link {
@@ -99,4 +122,25 @@
   margin-right: 15px;
   cursor: pointer;
 }
-.action-link:hover { text-decoration: underline; }
+
+.action-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .manage-container {
+    padding: 20px 15px;
+  }
+
+  .manage-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}

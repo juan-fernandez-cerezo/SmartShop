@@ -1,19 +1,27 @@
 .register-market-bg {
-  background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2000'); /* Imagen de súper genérica */
+  background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2000');
+  /* Imagen de súper genérica */
   background-size: cover;
   background-position: center;
+  min-height: 100vh;
   height: 100vh;
   width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .register-market-overlay {
-  background: rgba(0, 0, 0, 0.4); /* Capa oscura encima de la imagen */
-  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  /* Capa oscura encima de la imagen */
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(5px); /* Desenfoque de la imagen de fondo */
+  backdrop-filter: blur(5px);
+  /* Desenfoque de la imagen de fondo */
+  padding: 40px 20px;
+  box-sizing: border-box;
 }
 
 .register-logo {
@@ -31,7 +39,8 @@
   font-size: 20px;
   font-weight: bold;
   border-radius: 4px;
-  margin-bottom: -5px; /* Para que solape ligeramente con la tarjeta blanca */
+  margin-bottom: -5px;
+  /* Para que solape ligeramente con la tarjeta blanca */
   z-index: 1;
 }
 
@@ -41,7 +50,8 @@
   border-radius: 8px;
   width: 100%;
   max-width: 450px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .register-subtitle {
@@ -62,12 +72,16 @@
   color: #333;
 }
 
-.input-group input {
+.input-group input,
+.register-select {
   width: 100%;
   padding: 12px;
   border: 1px solid #eee;
   border-radius: 6px;
   background-color: #fdfdfd;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
 }
 
 .btn-register-confirm {
@@ -90,4 +104,45 @@
   margin-top: 20px;
   cursor: pointer;
   font-size: 14px;
+}
+
+/* Image Preview */
+.image-preview {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  padding: 10px;
+  background: white;
+  box-sizing: border-box;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-market-overlay {
+    padding: 20px 15px;
+    justify-content: flex-start;
+    /* Prevent vertical crop issues nicely */
+  }
+
+  .register-card {
+    padding: 25px 20px;
+  }
+
+  .register-header-blue {
+    font-size: 16px;
+    padding: 12px 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 350px;
+    box-sizing: border-box;
+  }
 }

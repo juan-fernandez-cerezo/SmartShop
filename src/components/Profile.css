@@ -10,11 +10,15 @@
 .profile-container {
   background-color: var(--bg-soft) !important;
   min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
   font-family: 'Inter', sans-serif;
+  width: 100%;
 }
 
 .profile-main-logo {
@@ -35,9 +39,12 @@
   background: var(--white);
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  width: 380px;
-  text-align: center; /* Centramos el contenido interno */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 380px;
+  box-sizing: border-box;
+  text-align: center;
+  /* Centramos el contenido interno */
 }
 
 .profile-card h2 {
@@ -59,7 +66,8 @@
 }
 
 /* Forzamos el estilo de las cajas de info */
-.info-box, .edit-input {
+.info-box,
+.edit-input {
   background-color: var(--bg-soft) !important;
   color: var(--text-main) !important;
   padding: 12px;
@@ -85,7 +93,8 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 20px;
-  width: auto; /* Para que no ocupe todo el ancho si no quieres */
+  width: auto;
+  /* Para que no ocupe todo el ancho si no quieres */
 }
 
 .actions-section {
@@ -124,7 +133,34 @@
   gap: 10px;
 }
 
-/* Mobile */
+.name-row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+}
+
+.name-col {
+  flex: 1;
+}
+
+/* Mobile & Small Screens */
 @media (max-width: 768px) {
-  .profile-layout { flex-direction: column; align-items: center; }
+  .profile-container {
+    padding: 20px 15px;
+  }
+
+  .profile-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .profile-card {
+    padding: 20px;
+  }
+
+  .name-row {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
