@@ -7,15 +7,17 @@ import { UpdatePassword } from './components/UpdatePassword';
 import { Shop } from './components/Shop';
 import { Profile } from './components/Profile';
 import { ManageSupermarkets } from './components/ManageSupermarkets';
+import { ProductManagement } from './components/ProductManagement';
 import { RegisterMarket } from './components/RegisterMarket';
 import { UploadMap } from './components/UploadMap';
 import { UploadProducts } from './components/UploadProducts';
+import { ShoppingView } from './components/ShoppingView';
 import type { Session } from '@supabase/supabase-js';
 
 import './App.css';
 import logoImg from './assets/logo.png';
 
-export type ViewState = 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password' | 'profile' | 'manage-supermarkets' | 'register-market' | 'upload-map' | 'upload-products';
+export type ViewState = 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password' | 'profile' | 'manage-supermarkets' | 'register-market' | 'upload-map' | 'upload-products' | 'edit-products' | 'shopping-view';
 
 function HomePage({ setView }: { setView: (view: ViewState) => void }) {
   return (
@@ -42,13 +44,14 @@ function HomePage({ setView }: { setView: (view: ViewState) => void }) {
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [view, setView] = useState<ViewState>('home');
-  // Esta variable guardará desde dónde venía el usuario antes de ir a Login
   const [prevView, setPrevView] = useState<ViewState>('home');
+  // ESTADO CRUCIAL: Guarda el ID del supermercado seleccionado
+  const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
+  const [selectedMarket, setSelectedMarket] = useState<any>(null);
 
-  // Función para cambiar de vista guardando la anterior
   const navigateTo = (newView: ViewState) => {
     if (newView === 'login') {
-      setPrevView(view); // Guardamos si veníamos de 'shop' o 'home'
+      setPrevView(view);
     }
     setView(newView);
   };
@@ -60,36 +63,27 @@ function App() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
       setSession(currentSession);
-
       if (event === 'SIGNED_IN') {
-        // LÓGICA DE REDIRECCIÓN INFALIBLE
-        if (prevView === 'shop') {
-          setView('shop');
-        } else {
-          setView('profile');
-        }
+        if (prevView === 'shop') setView('shop');
+        else setView('profile');
       }
-
-      if (event === 'SIGNED_OUT') {
-        setView('home');
-      }
-
-      if (event === "PASSWORD_RECOVERY") {
-        setView('reset-password');
-      }
+      if (event === 'SIGNED_OUT') setView('home');
+      if (event === "PASSWORD_RECOVERY") setView('reset-password');
     });
 
     return () => subscription.unsubscribe();
-  }, [prevView]); // Escuchamos prevView para que la lógica de SIGNED_IN sea precisa
+  }, [prevView]);
 
-  // --- RENDERING ---
   if (view === 'reset-password') return <UpdatePassword />;
 
   switch (view) {
     case 'home':
       return <HomePage setView={navigateTo} />;
     case 'shop':
-      return <Shop setView={navigateTo} session={session} />;
+      return <Shop setView={navigateTo} session={session} onSelectMarket={(market) => {
+        setSelectedMarketId(market.id);
+        setSelectedMarket(market);
+      }} />;
     case 'login':
       return <Login setView={navigateTo} />;
     case 'signup':
@@ -100,18 +94,41 @@ function App() {
       if (!session) return <Login setView={navigateTo} />;
       return <Profile setView={navigateTo} session={session} />;
     case 'manage-supermarkets':
-      // Protegemos la ruta: solo para dueños de supermercados logueados
       if (!session || session.user.user_metadata.role !== 'Supermarket') {
         setView('profile');
         return null;
       }
-      return <ManageSupermarkets setView={setView} session={session} />;
+      return (
+        <ManageSupermarkets 
+          setView={setView} 
+          session={session} 
+          onEditProducts={(id) => {
+            setSelectedMarketId(id);
+            setView('edit-products');
+          }}
+        />
+      );
+
+    case 'edit-products':
+      if (!session || !selectedMarketId) {
+        setView('manage-supermarkets');
+        return null;
+      }
+      return (
+        <ProductManagement 
+          supermarketId={selectedMarketId} 
+          setView={setView} 
+        />
+      );
+
     case 'register-market':
       return <RegisterMarket setView={setView} session={session} />;
     case 'upload-map':
       return <UploadMap setView={setView} session={session} />;
     case 'upload-products':
         return <UploadProducts setView={setView} session={session} />;
+    case 'shopping-view':
+        return <ShoppingView setView={setView} market={selectedMarket} session={session} />;
     default:
       return <HomePage setView={navigateTo} />;
   }

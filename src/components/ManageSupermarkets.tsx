@@ -7,16 +7,21 @@ interface Supermarket {
   id: string;
   name: string;
   location: string;
-  status: 'Activo' | 'Borrador'; // Si no tienes esta columna, la emularemos
+  status: 'Activo' | 'Borrador';
 }
 
-export const ManageSupermarkets = ({ setView, session }: { setView: (v: ViewState) => void, session: any }) => {
+interface ManageProps {
+  setView: (v: ViewState) => void;
+  session: any;
+  onEditProducts: (id: string) => void;
+}
+
+export const ManageSupermarkets = ({ setView, session, onEditProducts }: ManageProps) => {
   const [markets, setMarkets] = useState<Supermarket[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMyMarkets = async () => {
-      // Buscamos los supermercados que pertenecen al usuario logueado
       const { data, error } = await supabase
         .from('supermarkets')
         .select('*')
@@ -80,20 +85,35 @@ export const ManageSupermarkets = ({ setView, session }: { setView: (v: ViewStat
           <tbody>
             {loading ? (
               <tr><td colSpan={4}>Cargando...</td></tr>
-            ) : markets.map(market => (
-              <tr key={market.id}>
-                <td style={{ fontWeight: '500' }}>{market.name}</td>
-                <td>{market.location}</td>
-                <td>
-                  <span className={`status-badge ${market.status === 'Borrador' ? 'status-draft' : 'status-active'}`}>
-                    {market.status || 'Activo'}
-                  </span>
-                </td>
-                <td>
-                  <span className="action-link" onClick={() => alert('Editar Supermercado ' + market.name)}>📝 Editar Supermercado</span>
-                </td>
-              </tr>
-            ))}
+            ) : (
+              markets.map(market => (
+                <tr key={market.id}>
+                  <td style={{ fontWeight: '500' }}>{market.name}</td>
+                  <td>{market.location}</td>
+                  <td>
+                    <span className={`status-badge ${market.status === 'Borrador' ? 'status-draft' : 'status-active'}`}>
+                      {market.status || 'Activo'}
+                    </span>
+                  </td>
+                  <td style={{ display: 'flex', gap: '15px' }}>
+                    <span 
+                      className="action-link" 
+                      onClick={() => alert('Editando mapa de: ' + market.name)}
+                      style={{ cursor: 'pointer', color: '#2b459a', fontSize: '14px' }}
+                    >
+                      📍 Editar mapa
+                    </span>
+                    <span 
+                      className="action-link" 
+                      onClick={() => onEditProducts(market.id)} 
+                      style={{ cursor: 'pointer', color: '#2b459a', fontSize: '14px' }}
+                    >
+                      📦 Editar productos
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

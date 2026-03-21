@@ -16,7 +16,7 @@ interface ShopProps {
   session: any;
 }
 
-export const Shop = ({ setView, session }: ShopProps) => {
+export const Shop = ({ setView, session, onSelectMarket }: ShopProps & { onSelectMarket: (market: Supermarket) => void }) => {
   const [markets, setMarkets] = useState<Supermarket[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -115,8 +115,14 @@ export const Shop = ({ setView, session }: ShopProps) => {
                 <h3>Location:</h3>
                 <p>{m.location}</p>
               </div>
-
-              <button className="btn-choose" onClick={() => alert(`Supermarket: ${m.name}`)}>
+              
+              <button 
+                className="btn-choose" 
+                onClick={() => {
+                  onSelectMarket(m); // Guardamos el market
+                  setView('shopping-view'); // Vamos a la compra
+                }}
+              >
                 Choose
               </button>
             </div>

@@ -1,9 +1,6 @@
 .manage-container {
   background-color: #f8f9fa;
   min-height: 100vh;
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
   box-sizing: border-box;
   width: 100%;
   padding: 40px;
