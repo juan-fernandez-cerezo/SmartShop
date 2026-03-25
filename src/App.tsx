@@ -11,13 +11,15 @@ import { ProductManagement } from './components/ProductManagement';
 import { RegisterMarket } from './components/RegisterMarket';
 import { UploadMap } from './components/UploadMap';
 import { UploadProducts } from './components/UploadProducts';
+import { DefineZones } from './components/DefineZones';
 import { ShoppingView } from './components/ShoppingView';
+import { RouteView } from './components/RouteView';
 import type { Session } from '@supabase/supabase-js';
 
 import './App.css';
 import logoImg from './assets/logo.png';
 
-export type ViewState = 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password' | 'profile' | 'manage-supermarkets' | 'register-market' | 'upload-map' | 'upload-products' | 'edit-products' | 'shopping-view';
+export type ViewState = 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password' | 'profile' | 'manage-supermarkets' | 'register-market' | 'upload-map' | 'define-zones' | 'upload-products' | 'edit-products' | 'shopping-view' | 'route-view';
 
 function HomePage({ setView }: { setView: (view: ViewState) => void }) {
   return (
@@ -48,6 +50,7 @@ function App() {
   // ESTADO CRUCIAL: Guarda el ID del supermercado seleccionado
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
+  const [cartItems, setCartItems] = useState<any[]>([]);
 
   const navigateTo = (newView: ViewState) => {
     if (newView === 'login') {
@@ -106,6 +109,10 @@ function App() {
             setSelectedMarketId(id);
             setView('edit-products');
           }}
+          onEditMap={(id) => {
+            setSelectedMarketId(id);
+            setView('define-zones');
+          }}
         />
       );
 
@@ -124,11 +131,40 @@ function App() {
     case 'register-market':
       return <RegisterMarket setView={setView} session={session} />;
     case 'upload-map':
-      return <UploadMap setView={setView} session={session} />;
+      return (
+        <UploadMap
+          setView={setView}
+          session={session}
+          onMapUploaded={(id) => {
+            setSelectedMarketId(id);
+            setView('define-zones');
+          }}
+        />
+      );
+    case 'define-zones':
+      return (
+        <DefineZones
+          setView={setView}
+          session={session}
+          supermarketId={selectedMarketId}
+        />
+      );
     case 'upload-products':
         return <UploadProducts setView={setView} session={session} />;
     case 'shopping-view':
-        return <ShoppingView setView={setView} market={selectedMarket} session={session} />;
+        return (
+          <ShoppingView
+            setView={setView}
+            market={selectedMarket}
+            session={session}
+            onCheckout={(items: any[]) => {
+              setCartItems(items);
+              setView('route-view');
+            }}
+          />
+        );
+    case 'route-view':
+        return <RouteView setView={setView} market={selectedMarket} cart={cartItems} />;
     default:
       return <HomePage setView={navigateTo} />;
   }

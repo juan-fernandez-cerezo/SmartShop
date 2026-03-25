@@ -136,9 +136,9 @@ export const ProductManagement = ({ supermarketId, setView }: { supermarketId: s
                 <td colSpan={8} style={{ 
                   textAlign: 'center', 
                   padding: '50px', 
-                  color: '#ccc',
+                  color: '#94a3b8',
                   fontSize: '1.2rem',
-                  backgroundColor: '#1a1a1a' 
+                  backgroundColor: 'transparent'
                 }}>
                   No se encontraron productos. Haz clic en "Add product" para comenzar.
                 </td>

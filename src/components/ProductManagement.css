@@ -18,60 +18,199 @@
 
 
 /* MODAL STYLES */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
-.modal-content { background: #e0f2fe; padding: 30px; border-radius: 8px; width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.full-width { grid-column: span 2; }
-.input-group label { display: block; font-size: 14px; margin-bottom: 5px; }
-.input-group input, .input-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-.modal-buttons { margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end; }
-.btn-save { background: #1a5673; color: white; border: none; padding: 10px 20px; cursor: pointer; }
-.btn-cancel { background: #9ca3af; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+.modal-overlay { 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.6); 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content { 
+  background: #e0f2fe; 
+  padding: 25px; 
+  border-radius: 12px; 
+  width: 100%; 
+  max-width: 500px; 
+  max-height: 90vh; /* keeps it within screen */
+  overflow-y: auto; /* allows scroll if too tall */
+  box-sizing: border-box; 
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #0e4b63;
+  text-align: center;
+}
+
+.modal-grid { 
+  display: grid; 
+  grid-template-columns: 1fr; 
+  gap: 15px; 
+} 
+
+@media (min-width: 600px) {
+  .modal-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.full-width { grid-column: 1 / -1; }
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label { 
+  font-size: 14px; 
+  margin-bottom: 6px; 
+  color: #1a5673;
+  font-weight: 600;
+}
+
+.input-group input, .input-group textarea { 
+  width: 100%; 
+  padding: 10px; 
+  border: 1px solid #cbd5e1; 
+  border-radius: 6px; 
+  font-family: inherit;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+}
+
+.input-group input:focus, .input-group textarea:focus {
+  outline: none;
+  border-color: #1a5673;
+  box-shadow: 0 0 0 2px rgba(26, 86, 115, 0.2);
+}
+
+.modal-buttons { 
+  margin-top: 25px; 
+  display: flex; 
+  gap: 12px; 
+  justify-content: flex-end; 
+}
+
+.btn-save { 
+  background: #1a5673; 
+  color: white; 
+  border: none; 
+  padding: 12px 20px; 
+  cursor: pointer; 
+  border-radius: 6px;
+  font-weight: 600;
+  flex: 1; /* For mobile: full width buttons side by side */
+  transition: background 0.2s;
+}
+
+.btn-save:hover { background: #13425a; }
+
+.btn-cancel { 
+  background: #94a3b8; 
+  color: white; 
+  border: none; 
+  padding: 12px 20px; 
+  cursor: pointer; 
+  border-radius: 6px;
+  font-weight: 600;
+  flex: 1;
+  transition: background 0.2s;
+}
+
+.btn-cancel:hover { background: #64748b; }
+
+@media (min-width: 480px) {
+  .btn-save, .btn-cancel {
+    flex: none; /* Revert to natural size on larger screens */
+    min-width: 100px;
+  }
+}
+
 
 
 /* Contenedor principal con altura definida para habilitar scroll */
 .table-scroll-container {
-    max-height: 500px; /* Ajusta según necesites */
+    max-height: 500px;
+    overflow-x: auto; /* Important for responsiveness */
     overflow-y: auto;
-    border: 1px solid #444;
-    background-color: #1a1a1a;
+    border: 1px solid #334155;
+    background-color: #1e293b; /* Darker blue-grey background */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Fuerza a la tabla a expandirse */
 .product-table {
     width: 100%;
+    min-width: 800px; /* Ensure columns don't compress too much on mobile */
     border-collapse: collapse;
-    table-layout: fixed; /* Esto ayuda a que las columnas mantengan su tamaño */
+    color: #f8fafc; /* Light text color for contrast */
 }
 
 /* Hacer que el encabezado sea pegajoso (sticky) */
 .product-table thead th {
     position: sticky;
     top: 0;
-    background-color: #1a5673; /* El color azul que tenías */
-    z-index: 1;
+    background-color: #1a5673;
+    color: #ffffff; /* Explicit white text for header */
+    z-index: 10;
     cursor: pointer;
     user-select: none;
-    padding: 15px 10px;
+    padding: 15px 12px;
     white-space: nowrap;
+    text-align: left;
+    border-bottom: 2px solid #0f172a;
 }
 
 .product-table thead th:hover {
     background-color: #246d91;
 }
 
+.product-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #334155; /* Clear visible lines */
+    vertical-align: middle;
+}
+
+.product-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.product-table tbody tr:hover {
+    background-color: #334155; /* Highlight row on hover */
+}
+
 /* Asegurar que las celdas de imagen no rompan el diseño */
 .url-cell {
-    max-width: 200px;
+    max-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: #94a3b8; /* slightly muted for URL */
 }
 
 /* Estilo para los botones de acción */
 .action-cells {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    min-width: 100px;
+    gap: 6px;
+    min-width: 90px;
+}
+
+.action-cells button {
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.action-cells button:hover {
+    opacity: 0.8;
 }

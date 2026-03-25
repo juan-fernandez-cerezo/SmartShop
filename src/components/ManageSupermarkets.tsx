@@ -14,9 +14,10 @@ interface ManageProps {
   setView: (v: ViewState) => void;
   session: any;
   onEditProducts: (id: string) => void;
+  onEditMap: (id: string) => void;
 }
 
-export const ManageSupermarkets = ({ setView, session, onEditProducts }: ManageProps) => {
+export const ManageSupermarkets = ({ setView, session, onEditProducts, onEditMap }: ManageProps) => {
   const [markets, setMarkets] = useState<Supermarket[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -98,7 +99,7 @@ export const ManageSupermarkets = ({ setView, session, onEditProducts }: ManageP
                   <td style={{ display: 'flex', gap: '15px' }}>
                     <span 
                       className="action-link" 
-                      onClick={() => alert('Editando mapa de: ' + market.name)}
+                      onClick={() => onEditMap(market.id)}
                       style={{ cursor: 'pointer', color: '#2b459a', fontSize: '14px' }}
                     >
                       📍 Editar mapa

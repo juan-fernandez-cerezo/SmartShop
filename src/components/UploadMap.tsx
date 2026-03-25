@@ -3,7 +3,13 @@ import { supabase } from '../lib/supabaseClient';
 import './UploadMap.css';
 import type { ViewState } from '../App';
 
-export const UploadMap = ({ setView, session }: { setView: (v: ViewState) => void, session: any }) => {
+interface UploadMapProps {
+  setView: (v: ViewState) => void;
+  session: any;
+  onMapUploaded?: (marketId: string) => void;
+}
+
+export const UploadMap = ({ setView, session, onMapUploaded }: UploadMapProps) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -40,12 +46,11 @@ export const UploadMap = ({ setView, session }: { setView: (v: ViewState) => voi
         .getPublicUrl(filePath);
 
       // C. Actualizar el último supermercado creado por este usuario
-      // (Para hacerlo más preciso, lo ideal sería pasar el ID del market recién creado)
       const { data: lastMarket } = await supabase
         .from('supermarkets')
         .select('id')
         .eq('user_id', session.user.id)
-        .order('id', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1)
         .single();
 
@@ -57,8 +62,12 @@ export const UploadMap = ({ setView, session }: { setView: (v: ViewState) => voi
       }
 
       alert("¡Mapa subido correctamente!");
-      // REDIRECCIÓN ACTUALIZADA:
-      setView('upload-products');
+      // Notify parent with the market ID so it can store it before navigating
+      if (onMapUploaded && lastMarket) {
+        onMapUploaded(lastMarket.id);
+      } else {
+        setView('define-zones');
+      }
 
     } catch (error: any) {
       alert("Error: " + error.message);

@@ -9,6 +9,7 @@ interface Supermarket {
   name: string;
   location: string;
   image_url: string | null;
+  map_image_url: string | null;
 }
 
 interface ShopProps {
@@ -29,7 +30,7 @@ export const Shop = ({ setView, session, onSelectMarket }: ShopProps & { onSelec
       setLoading(true);
       const { data, error } = await supabase
         .from('supermarkets')
-        .select('id, name, location, image_url');
+        .select('id, name, location, image_url, map_image_url');
 
       if (error) console.error("Error:", error);
       else setMarkets(data || []);

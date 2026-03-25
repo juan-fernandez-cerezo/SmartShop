@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 import './ShoppingView.css';
 import logoImg from '../assets/logo.png'; // Make sure this path corresponds to your logo
 
-export const ShoppingView = ({ setView, market, session }: any) => {
+export const ShoppingView = ({ setView, market, session, onCheckout }: any) => {
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -190,7 +190,7 @@ export const ShoppingView = ({ setView, market, session }: any) => {
               className="filter-dropdown"
             >
               {categories.map((cat, idx) => (
-                <option key={idx} value={cat}>-- {cat} --</option>
+                <option key={idx} value={cat}>{cat}</option>
               ))}
             </select>
             
@@ -288,7 +288,11 @@ export const ShoppingView = ({ setView, market, session }: any) => {
             </button>
           )}
 
-          <button className="btn-checkout" disabled={cart.length === 0}>
+          <button
+            className="btn-checkout"
+            disabled={cart.length === 0}
+            onClick={() => onCheckout?.(cart)}
+          >
             Finalizar Compra y Ver Ruta
           </button>
         </div>
