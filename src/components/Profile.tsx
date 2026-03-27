@@ -135,9 +135,20 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
         </div>
 
         <div className="actions-section">
-          <button className="btn-manage" onClick={() => role === 'Supermarket' ? setView('manage-supermarkets') : setView('shop')}>
-            📦 Gestionar Tienda
-          </button>
+          {role === 'Consumer' ? (
+            <>
+              <button className="btn-manage" onClick={() => setView('shop')}>
+                🛒 Start Shopping
+              </button>
+              <button className="btn-manage" onClick={() => setView('saved-lists')} style={{ marginLeft: '10px' }}>
+                📝 Shopping Lists
+              </button>
+            </>
+          ) : (
+            <button className="btn-manage" onClick={() => setView('manage-supermarkets')}>
+              📦 Gestionar Tienda
+            </button>
+          )}
           <button className="btn-logout" onClick={handleLogout}>Cerrar Sesión</button>
         </div>
       </div>

@@ -12,6 +12,8 @@ import { RegisterMarket } from './components/RegisterMarket';
 import { UploadMap } from './components/UploadMap';
 import { UploadProducts } from './components/UploadProducts';
 import { DefineZones } from './components/DefineZones';
+// Re-importing SavedLists to force TS Language Server to recognize the new file
+import { SavedLists } from './components/SavedLists';
 import { ShoppingView } from './components/ShoppingView';
 import { RouteView } from './components/RouteView';
 import type { Session } from '@supabase/supabase-js';
@@ -19,7 +21,7 @@ import type { Session } from '@supabase/supabase-js';
 import './App.css';
 import logoImg from './assets/logo.png';
 
-export type ViewState = 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password' | 'profile' | 'manage-supermarkets' | 'register-market' | 'upload-map' | 'define-zones' | 'upload-products' | 'edit-products' | 'shopping-view' | 'route-view';
+export type ViewState = 'home' | 'login' | 'signup' | 'shop' | 'forgot-password' | 'reset-password' | 'profile' | 'manage-supermarkets' | 'register-market' | 'upload-map' | 'define-zones' | 'upload-products' | 'edit-products' | 'shopping-view' | 'route-view' | 'saved-lists' | 'saved-lists-filtered';
 
 function HomePage({ setView }: { setView: (view: ViewState) => void }) {
   return (
@@ -157,6 +159,7 @@ function App() {
             setView={setView}
             market={selectedMarket}
             session={session}
+            initialCart={cartItems}
             onCheckout={(items: any[]) => {
               setCartItems(items);
               setView('route-view');
@@ -165,6 +168,22 @@ function App() {
         );
     case 'route-view':
         return <RouteView setView={setView} market={selectedMarket} cart={cartItems} />;
+    case 'saved-lists':
+    case 'saved-lists-filtered':
+        if (!session) return <Login setView={navigateTo} />;
+        return (
+          <SavedLists 
+            setView={setView} 
+            session={session} 
+            filterMarketId={view === 'saved-lists-filtered' ? selectedMarketId : null}
+            onEditList={(market: any, listItems: any[]) => {
+              setSelectedMarketId(market.id);
+              setSelectedMarket(market);
+              setCartItems(listItems);
+              setView('shopping-view');
+            }} 
+          />
+        );
     default:
       return <HomePage setView={navigateTo} />;
   }
