@@ -118,6 +118,12 @@ export const ManageSupermarkets = ({ setView, session, onEditProducts, onEditMap
           <tbody>
             {loading ? (
               <tr><td colSpan={4}>Loading...</td></tr>
+            ) : markets.length === 0 ? (
+              <tr>
+                <td colSpan={4} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                  No Supermarkets found. Click on "+ New Supermarket" to start.
+                </td>
+              </tr>
             ) : (
               markets.map(market => (
                 <tr key={market.id}>

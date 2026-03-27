@@ -78,8 +78,15 @@ export const UploadMap = ({ setView, session, onMapUploaded }: UploadMapProps) =
 
   return (
     <div className="upload-container">
-      <div className="upload-card">
-        <div className="upload-header">
+      <div className="top-nav-bar">
+        <button className="nav-btn-back" onClick={() => setView('register-market')}>← Back</button>
+        <button className="nav-btn-panel" onClick={() => setView('manage-supermarkets')}>Management Panel</button>
+        <button className="nav-btn-next" onClick={() => setView('define-zones')}>Next / Skip →</button>
+      </div>
+
+      <div className="upload-card-wrapper">
+        <div className="upload-card">
+          <div className="upload-header">
           <span className="cart-icon">🛒</span>
           <h2>MarketFind - Optimizador de Rutas</h2>
         </div>
@@ -91,33 +98,34 @@ export const UploadMap = ({ setView, session, onMapUploaded }: UploadMapProps) =
             ) : (
               <>
                 <div className="upload-icon">⬆️</div>
-                <h3>Carga el mapa de tu supermercado</h3>
-                <p>Sube una imagen del plano del supermercado para comenzar</p>
+                <h3>Upload the map of your supermarket</h3>
+                <p>Upload an image of the supermarket plan to start</p>
               </>
             )}
           </div>
-          
-          <input 
-            type="file" 
-            id="file-upload" 
-            accept="image/*" 
-            onChange={handleFileChange} 
-            hidden 
+
+          <input
+            type="file"
+            id="file-upload"
+            accept="image/*"
+            onChange={handleFileChange}
+            hidden
           />
           <label htmlFor="file-upload" className="btn-select">
-            {file ? 'Cambiar imagen' : 'Seleccionar imagen'}
+            {file ? 'Change image' : 'Select image'}
           </label>
         </div>
 
         {file && (
-          <button 
-            className="btn-confirm-upload" 
-            onClick={handleUpload} 
+          <button
+            className="btn-confirm-upload"
+            onClick={handleUpload}
             disabled={uploading}
           >
-            {uploading ? 'Subiendo...' : 'Confirmar y Finalizar'}
+            {uploading ? 'Uploading...' : 'Confirm and Finish'}
           </button>
         )}
+      </div>
       </div>
     </div>
   );

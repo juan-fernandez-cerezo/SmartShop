@@ -16,7 +16,7 @@
   justify-content: space-between;
   padding: 18px 28px;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   flex-shrink: 0;
   gap: 16px;
   flex-wrap: wrap;
@@ -58,6 +58,7 @@
   transition: all 0.18s;
   white-space: nowrap;
 }
+
 .dz-btn-back:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
@@ -74,6 +75,7 @@
   transition: all 0.18s;
   white-space: nowrap;
 }
+
 .dz-btn-skip:hover {
   background: #f1f5f9;
 }
@@ -89,13 +91,15 @@
   cursor: pointer;
   transition: all 0.18s;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.35);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
+
 .dz-btn-save:hover:not(:disabled) {
   background: linear-gradient(135deg, #1d4ed8, #1e40af);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(37,99,235,0.4);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
 }
+
 .dz-btn-save:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -139,7 +143,7 @@
   cursor: crosshair;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
   user-select: none;
   align-self: flex-start;
   max-width: 100%;
@@ -175,7 +179,7 @@
   left: 6px;
   font-size: 11px;
   font-weight: 700;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 3px;
   padding: 1px 5px;
   white-space: nowrap;
@@ -189,7 +193,7 @@
   position: absolute;
   top: 3px;
   right: 5px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
   width: 20px;
@@ -205,6 +209,7 @@
   padding: 0;
   transition: background 0.15s;
 }
+
 .zone-delete-btn:hover {
   background: #fee2e2;
 }
@@ -214,7 +219,7 @@
 .zone-drawing-ghost {
   position: absolute;
   border: 2px dashed #2563eb;
-  background: rgba(37,99,235,0.12);
+  background: rgba(37, 99, 235, 0.12);
   border-radius: 4px;
   box-sizing: border-box;
   pointer-events: none;
@@ -240,7 +245,7 @@
   padding: 12px 16px;
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   align-self: flex-start;
 }
 
@@ -317,6 +322,7 @@
   border-bottom: 1px solid #f8fafc;
   transition: background 0.15s;
 }
+
 .dz-zone-item:hover {
   background: #f8fafc;
 }
@@ -364,6 +370,7 @@
   transition: color 0.15s;
   flex-shrink: 0;
 }
+
 .dz-zone-delete:hover {
   color: #ef4444;
 }
@@ -386,9 +393,22 @@
   transition: background 0.15s;
   color: #64748b;
 }
-.dz-zone-edit:hover { background: #f1f5f9; }
-.dz-zone-edit--confirm { color: #16a34a; font-size: 15px; font-weight: 700; }
-.dz-zone-edit--cancel  { color: #ef4444; font-size: 13px; font-weight: 700; }
+
+.dz-zone-edit:hover {
+  background: #f1f5f9;
+}
+
+.dz-zone-edit--confirm {
+  color: #16a34a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.dz-zone-edit--cancel {
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 700;
+}
 
 /* Inline name edit input */
 .dz-zone-name-input {
@@ -403,9 +423,10 @@
   outline: none;
   box-sizing: border-box;
 }
+
 .dz-zone-name-input:focus {
   border-color: #d97706;
-  box-shadow: 0 0 0 3px rgba(245,158,11,0.18);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
 }
 
 
@@ -414,7 +435,7 @@
 .dz-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15,23,42,0.5);
+  background: rgba(15, 23, 42, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -424,8 +445,13 @@
 }
 
 @keyframes dz-fadein {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .dz-modal {
@@ -434,13 +460,20 @@
   padding: 28px;
   width: 420px;
   max-width: 95vw;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-  animation: dz-slidein 0.18s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  animation: dz-slidein 0.18s cubic-bezier(.34, 1.56, .64, 1);
 }
 
 @keyframes dz-slidein {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)   scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .dz-modal-title {
@@ -452,6 +485,8 @@
 
 .dz-modal-field {
   margin-bottom: 18px;
+  background-color: #f8fafc;
+  color: white;
 }
 
 .dz-modal-field label {
@@ -468,14 +503,15 @@
   border: 1.5px solid #e2e8f0;
   border-radius: 8px;
   font-size: 14px;
-  color: #1e293b;
+  color: white;
   outline: none;
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
+
 .dz-modal-field input:focus {
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .dz-type-grid {
@@ -495,10 +531,12 @@
   color: #475569;
   transition: all 0.15s;
 }
+
 .dz-type-btn:hover {
   border-color: #94a3b8;
   background: #f1f5f9;
 }
+
 .dz-type-btn--active {
   font-weight: 700;
 }
@@ -520,6 +558,7 @@
   cursor: pointer;
   transition: all 0.15s;
 }
+
 .dz-modal-cancel:hover {
   background: #f8fafc;
 }
@@ -534,11 +573,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
+
 .dz-modal-confirm:hover:not(:disabled) {
   background: linear-gradient(135deg, #1d4ed8, #1e40af);
 }
+
 .dz-modal-confirm:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -567,7 +608,9 @@
 }
 
 @keyframes dz-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
@@ -576,6 +619,7 @@
   .dz-body {
     flex-direction: column;
   }
+
   .dz-sidebar {
     width: 100%;
     min-width: 0;
@@ -583,6 +627,7 @@
     border-top: 1px solid #e2e8f0;
     max-height: 250px;
   }
+
   .dz-header {
     flex-direction: column;
     align-items: flex-start;

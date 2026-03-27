@@ -22,21 +22,21 @@ interface DrawingRect {
 }
 
 const ZONE_COLORS: Record<ZoneType, { bg: string; border: string }> = {
-  Entrada:         { bg: 'rgba(34,197,94,0.28)',  border: '#16a34a' },
-  Salida:          { bg: 'rgba(16,185,129,0.28)',  border: '#059669' },
-  Estantería:      { bg: 'rgba(59,130,246,0.28)',  border: '#2563eb' },
-  Caja:            { bg: 'rgba(168,85,247,0.28)',  border: '#9333ea' },
-  'No transitable':{ bg: 'rgba(100,116,139,0.35)', border: '#475569' },
+  Entrada: { bg: 'rgba(34,197,94,0.28)', border: '#16a34a' },
+  Salida: { bg: 'rgba(16,185,129,0.28)', border: '#059669' },
+  Estantería: { bg: 'rgba(59,130,246,0.28)', border: '#2563eb' },
+  Caja: { bg: 'rgba(168,85,247,0.28)', border: '#9333ea' },
+  'No transitable': { bg: 'rgba(100,116,139,0.35)', border: '#475569' },
 };
 
 const ZONE_TYPES: ZoneType[] = ['Entrada', 'Salida', 'Estantería', 'Caja', 'No transitable'];
 
 const ZONE_ICONS: Record<ZoneType, string> = {
-  Entrada:         '🚪',
-  Salida:          '🏁',
-  Estantería:      '🛒',
-  Caja:            '💳',
-  'No transitable':'🚫',
+  Entrada: '🚪',
+  Salida: '🏁',
+  Estantería: '🛒',
+  Caja: '💳',
+  'No transitable': '🚫',
 };
 
 interface Props {
@@ -46,21 +46,21 @@ interface Props {
 }
 
 export const DefineZones = ({ setView, supermarketId }: Props) => {
-  const [mapUrl,      setMapUrl]      = useState<string | null>(null);
-  const [zones,       setZones]       = useState<Zone[]>([]);
-  const [drawing,     setDrawing]     = useState<DrawingRect | null>(null);
-  const [showModal,   setShowModal]   = useState(false);
+  const [mapUrl, setMapUrl] = useState<string | null>(null);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [drawing, setDrawing] = useState<DrawingRect | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const [pendingRect, setPendingRect] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [newZoneName, setNewZoneName] = useState('');
   const [newZoneType, setNewZoneType] = useState<ZoneType>('Estantería');
   const [hoveredZoneId, setHoveredZoneId] = useState<string | null>(null);
   const [editingZoneId, setEditingZoneId] = useState<string | null>(null);
-  const [editingName,   setEditingName]   = useState('');
-  const [saving,  setSaving]  = useState(false);
+  const [editingName, setEditingName] = useState('');
+  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const imgRef       = useRef<HTMLImageElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   // ── Load ────────────────────────────────────────────────────────────────────
 
@@ -90,7 +90,7 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
     const r = img.getBoundingClientRect();
     return {
       rx: Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)),
-      ry: Math.max(0, Math.min(1, (e.clientY - r.top)  / r.height)),
+      ry: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)),
     };
   }, []);
 
@@ -180,7 +180,7 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
   // ── Zone overlay render ───────────────────────────────────────────────────────
 
   const renderZoneOverlay = (zone: Zone) => {
-    const colors   = ZONE_COLORS[zone.type];
+    const colors = ZONE_COLORS[zone.type];
     const isHovered = hoveredZoneId === zone.id;
     return (
       <div
@@ -216,15 +216,15 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
       {/* Header */}
       <div className="dz-header">
         <div className="dz-header-left">
-          <button className="dz-btn-back" onClick={() => setView('manage-supermarkets')}>← Volver</button>
+          <button className="dz-btn-back" onClick={() => setView('manage-supermarkets')}>← Return</button>
           <div>
-            <h1 className="dz-title">🗺️ Definir Zonas del Mapa</h1>
-            <p className="dz-subtitle">Dibuja rectángulos sobre el mapa para marcar las distintas zonas</p>
+            <h1 className="dz-title">🗺️ Draw the zones of the map</h1>
+            <p className="dz-subtitle">Draw rectangles over the map to mark the different zones</p>
           </div>
         </div>
         <div className="dz-header-actions">
-          <button className="dz-btn-skip" onClick={() => setView('upload-products')}>Saltar →</button>
-          <button className="dz-btn-save" onClick={handleSave} disabled={saving}>{saving ? 'Guardando...' : '💾 Guardar y Continuar'}</button>
+          <button className="dz-btn-skip" onClick={() => setView('upload-products')}>Skip →</button>
+          <button className="dz-btn-save" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : '💾 Save and Continue'}</button>
         </div>
       </div>
 
@@ -241,8 +241,8 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
             </div>
           ) : (
             <div className="dz-no-map">
-              <p>⚠️ No hay mapa disponible. Sube primero la imagen del mapa.</p>
-              <button className="dz-btn-skip" onClick={() => setView('upload-map')}>Ir a subir mapa</button>
+              <p>⚠️ No map available. Upload the map image first.</p>
+              <button className="dz-btn-skip" onClick={() => setView('upload-map')}>Go to upload map</button>
             </div>
           )}
 
@@ -263,13 +263,13 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
 
           {zones.length === 0 ? (
             <div className="dz-sidebar-empty">
-              <p>Aún no has definido ninguna zona.</p>
-              <p>Dibuja sobre el mapa para empezar.</p>
+              <p>You haven't defined any zones yet.</p>
+              <p>Draw on the map to start.</p>
             </div>
           ) : (
             <ul className="dz-zone-list">
               {zones.map(zone => {
-                const colors  = ZONE_COLORS[zone.type];
+                const colors = ZONE_COLORS[zone.type];
                 const isEditing = editingZoneId === zone.id;
                 return (
                   <li key={zone.id} className="dz-zone-item">
@@ -286,7 +286,7 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
                           onClick={e => e.stopPropagation()}
                         />
                       ) : (
-                        <span className="dz-zone-name" title="Haz clic para editar el nombre">{zone.name}</span>
+                        <span className="dz-zone-name" title="Click to edit the name">{zone.name}</span>
                       )}
                       <span className="dz-zone-type-badge" style={{ background: colors.bg, color: colors.border, border: `1px solid ${colors.border}` }}>
                         {ZONE_ICONS[zone.type]} {zone.type}
@@ -295,13 +295,13 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
                     <div className="dz-zone-actions">
                       {isEditing ? (
                         <>
-                          <button className="dz-zone-edit dz-zone-edit--confirm" onClick={confirmEdit} title="Confirmar">✓</button>
-                          <button className="dz-zone-edit dz-zone-edit--cancel"  onClick={cancelEdit}  title="Cancelar">✕</button>
+                          <button className="dz-zone-edit dz-zone-edit--confirm" onClick={confirmEdit} title="Confirm">✓</button>
+                          <button className="dz-zone-edit dz-zone-edit--cancel" onClick={cancelEdit} title="Cancel">✕</button>
                         </>
                       ) : (
-                        <button className="dz-zone-edit" onClick={e => startEditing(zone, e)} title="Editar nombre">✏️</button>
+                        <button className="dz-zone-edit" onClick={e => startEditing(zone, e)} title="Edit name">✏️</button>
                       )}
-                      <button className="dz-zone-delete" onClick={() => deleteZone(zone.id)} title="Eliminar">×</button>
+                      <button className="dz-zone-delete" onClick={() => deleteZone(zone.id)} title="Delete">×</button>
                     </div>
                   </li>
                 );
@@ -315,10 +315,10 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
       {showModal && (
         <div className="dz-modal-overlay" onClick={cancelModal}>
           <div className="dz-modal" onClick={e => e.stopPropagation()}>
-            <h3 className="dz-modal-title">✏️ Nueva Zona</h3>
+            <h3 className="dz-modal-title">✏️ New Zone</h3>
 
             <div className="dz-modal-field">
-              <label>Nombre de la zona</label>
+              <label>Zone name</label>
               <input
                 type="text"
                 className="dz-modal-input"
@@ -331,7 +331,7 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
             </div>
 
             <div className="dz-modal-field">
-              <label>Tipo de zona</label>
+              <label>Zone type</label>
               <div className="dz-type-grid">
                 {ZONE_TYPES.map(t => (
                   <button
@@ -347,8 +347,8 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
             </div>
 
             <div className="dz-modal-actions">
-              <button className="dz-modal-cancel" onClick={cancelModal}>Cancelar</button>
-              <button className="dz-modal-confirm" onClick={confirmZone} disabled={!newZoneName.trim()}>Añadir zona</button>
+              <button className="dz-modal-cancel" onClick={cancelModal}>Cancel</button>
+              <button className="dz-modal-confirm" onClick={confirmZone} disabled={!newZoneName.trim()}>Add zone</button>
             </div>
           </div>
         </div>
