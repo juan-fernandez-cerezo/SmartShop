@@ -3,7 +3,8 @@
 
 
 /* 1. Reset total para eliminar cualquier scroll posible */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -18,28 +19,31 @@ html, body {
 .home-container {
   /* Imagen de fondo */
   background-image: url('./assets/fondo.png');
-  
+
   /* Ajuste perfecto del fondo */
-  background-size: cover;          /* Llena el espacio sin deformar */
-  background-position: center;     /* Centra la foto */
+  background-size: cover;
+  /* Llena el espacio sin deformar */
+  background-position: center;
+  /* Centra la foto */
   background-repeat: no-repeat;
-  
+
   /* Dimensiones fijas a la ventana */
   width: 100vw;
   height: 100vh;
-  
+
   /* Centrado de elementos */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
+
   /* Seguridad extra */
   position: fixed;
   top: 0;
   left: 0;
 
-  color: #004a6f; /* Color del texto azul oscuro */
+  color: #004a6f;
+  /* Color del texto azul oscuro */
 }
 
 /* Contenedor del Logo y Texto */
@@ -47,7 +51,8 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px; /* Reducido para responsive */
+  margin-bottom: 20px;
+  /* Reducido para responsive */
 }
 
 .logo-image {
@@ -57,30 +62,38 @@ html, body {
 }
 
 .smartshop-text {
-  font-size: 24px; /* Tamaño base */
+  font-size: 24px;
+  /* Tamaño base */
   font-weight: bold;
   margin-top: 5px;
 }
 
 /* El recuadro central azul oscuro */
 .central-box {
-  background-color: rgba(0, 74, 111, 0.9); /* Azul oscuro con opacidad */
+  background-color: rgba(0, 74, 111, 0.9);
+  /* Azul oscuro con opacidad */
   color: white;
-  padding: 30px; /* Reducido para responsive */
+  padding: 30px;
+  /* Reducido para responsive */
   border-radius: 20px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Espacio entre elementos */
-  width: 80%; /* Ancho base para móviles */
-  max-width: 400px; /* Ancho máximo para escritorio */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  gap: 15px;
+  /* Espacio entre elementos */
+  width: 80%;
+  /* Ancho base para móviles */
+  max-width: 400px;
+  /* Ancho máximo para escritorio */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .central-box h2 {
-  font-size: 18px; /* Tamaño base */
+  font-size: 18px;
+  /* Tamaño base */
   margin: 0;
   text-transform: uppercase;
+  color: orange;
 }
 
 /* Estilos base para los botones */
@@ -88,7 +101,8 @@ html, body {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
-  font-size: 16px; /* Tamaño base */
+  font-size: 16px;
+  /* Tamaño base */
   font-weight: bold;
   cursor: pointer;
   width: 100%;
@@ -103,18 +117,23 @@ html, body {
   font-weight: bold;
   cursor: pointer;
   width: 100%;
-  margin-bottom: 10px; /* Separación entre botones */
-  background-color: white !important; /* Forzar fondo blanco */
-  color: #004a6f !important; /* Texto azul oscuro */
+  margin-bottom: 10px;
+  /* Separación entre botones */
+  background-color: white !important;
+  /* Forzar fondo blanco */
+  color: #004a6f !important;
+  /* Texto azul oscuro */
 }
 
 .start-shopping {
-  background-color: #00cc66 !important; /* Verde para el de comprar */
+  background-color: #00cc66 !important;
+  /* Verde para el de comprar */
   color: white !important;
 }
 
 .start-shopping-btn {
-  background-color: #00cc66; /* Verde brillante */
+  background-color: #00cc66;
+  /* Verde brillante */
   color: white;
 }
 
@@ -123,7 +142,8 @@ html, body {
 }
 
 .login-register-btn {
-  background-color: #00746f; /* Azul-verde */
+  background-color: #00746f;
+  /* Azul-verde */
   color: white;
 }
 
@@ -133,11 +153,14 @@ html, body {
 
 /* La nota al pie */
 .footer-note {
-  font-size: 12px; /* Tamaño base */
-  margin-top: 15px; /* Reducido */
+  font-size: 14px;
+  /* Tamaño base */
+  margin-top: 15px;
+  /* Reducido */
   font-style: italic;
   text-align: center;
   padding: 0 20px;
+  color: red;
 }
 
 /* --- MEDIA QUERIES PARA RESPONSIVE --- */
@@ -147,16 +170,21 @@ html, body {
   .logo-image {
     width: 80px;
   }
+
   .smartshop-text {
     font-size: 20px;
   }
+
   .central-box {
     width: 85%;
     padding: 20px;
   }
+
   .central-box h2 {
     font-size: 16px;
+    color: orange;
   }
+
   .action-button {
     font-size: 14px;
     padding: 10px 15px;
@@ -168,23 +196,28 @@ html, body {
   .logo-image {
     width: 120px;
   }
+
   .smartshop-text {
     font-size: 28px;
   }
+
   .central-box {
     padding: 50px;
     gap: 25px;
+    color: orange;
   }
+
   .central-box h2 {
     font-size: 22px;
+    color: orange;
   }
+
   .action-button {
     font-size: 18px;
   }
+
   .footer-note {
     font-size: 14px;
     margin-top: 25px;
   }
 }
-
-

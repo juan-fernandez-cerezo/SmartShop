@@ -30,7 +30,8 @@ export const Shop = ({ setView, session, onSelectMarket }: ShopProps & { onSelec
       setLoading(true);
       const { data, error } = await supabase
         .from('supermarkets')
-        .select('id, name, location, image_url, map_image_url');
+        .select('id, name, location, image_url, map_image_url')
+        .in('status', ['Published', 'Activo']);
 
       if (error) console.error("Error:", error);
       else setMarkets(data || []);
@@ -63,7 +64,7 @@ export const Shop = ({ setView, session, onSelectMarket }: ShopProps & { onSelec
 
         {/* Botón de Perfil/Login a la derecha (el que ya tenías) */}
         <button className="btn-nav" onClick={() => session ? setView('profile') : setView('login')}>
-          {session ? 'Ver Perfil' : 'Log in'}
+          <span className="icon">{session ? '👤' : '🔑'}</span> <span className="text">{session ? 'Profile' : 'Log in'}</span>
         </button>
       </div>
 
@@ -98,7 +99,7 @@ export const Shop = ({ setView, session, onSelectMarket }: ShopProps & { onSelec
 
       <div className="supermarkets-grid">
         {loading ? (
-          <p>Cargando...</p>
+          <p>Loading...</p>
         ) : filteredMarkets.length > 0 ? (
           filteredMarkets.map((m) => (
             <div className="market-card" key={m.id}>
@@ -116,9 +117,9 @@ export const Shop = ({ setView, session, onSelectMarket }: ShopProps & { onSelec
                 <h3>Location:</h3>
                 <p>{m.location}</p>
               </div>
-              
-              <button 
-                className="btn-choose" 
+
+              <button
+                className="btn-choose"
                 onClick={() => {
                   onSelectMarket(m); // Guardamos el market
                   setView('shopping-view'); // Vamos a la compra

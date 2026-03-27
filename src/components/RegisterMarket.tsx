@@ -35,7 +35,7 @@ export const RegisterMarket = ({ setView, session }: { setView: (v: ViewState) =
           location, 
           user_id: session.user.id,
           image_url: imageUrl, // <-- Se guarda la URL automáticamente
-          status: 'Activo'
+          status: 'Draft'
         }
       ]);
 

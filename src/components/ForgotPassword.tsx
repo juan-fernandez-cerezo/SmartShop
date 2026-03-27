@@ -13,7 +13,7 @@ export const ForgotPassword = ({ setView }: { setView: (v: any) => void }) => {
     });
 
     if (error) alert(error.message);
-    else alert("¡Enlace enviado! Revisa tu bandeja de entrada.");
+    else alert("¡Link sent! Check your inbox.");
   };
 
   return (
@@ -22,15 +22,15 @@ export const ForgotPassword = ({ setView }: { setView: (v: any) => void }) => {
       <div className="right-side">
         <div className="login-card">
           <img src={logoImg} alt="Logo" className="card-logo" />
-          <h2>Recuperar clave</h2>
-          <p style={{marginBottom: '20px', color: '#666'}}>Escribe tu email y te enviaremos un enlace.</p>
+          <h2>Reset Password</h2>
+          <p style={{ marginBottom: '20px', color: '#666' }}>Write your email and we will send you a link.</p>
           <form onSubmit={handleResetRequest}>
             <div className="input-group">
               <input type="email" placeholder="Email address" required onChange={(e) => setEmail(e.target.value)} />
             </div>
-            <button type="submit" className="btn-login">Enviar enlace</button>
+            <button type="submit" className="btn-login">Send link</button>
           </form>
-          <button className="back-home" onClick={() => setView('login')}>← Volver al Login</button>
+          <button className="back-home" onClick={() => setView('login')}>← Return to Login</button>
         </div>
       </div>
     </div>

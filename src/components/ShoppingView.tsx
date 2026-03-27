@@ -70,13 +70,13 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
   // Derive categories
   const categories = useMemo(() => {
     const cats = products.map(p => p.category).filter(Boolean);
-    return ['Todas las secciones', ...new Set(cats)];
+    return ['All sections', ...new Set(cats)];
   }, [products]);
 
   // Filtered products
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
-      const matchCat = selectedCategory === 'Todas las secciones' || p.category === selectedCategory;
+      const matchCat = selectedCategory === 'All sections' || p.category === selectedCategory;
       const matchSearch = p.name?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchCat && matchSearch;
     });
@@ -122,7 +122,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
 
   const saveList = async () => {
     if (!session?.user) {
-      alert("Debes iniciar sesión para guardar listas.");
+      alert("You must be logged in to save lists.");
       return;
     }
 
@@ -139,12 +139,12 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
       if (consumer) {
         consumerId = consumer.id;
       } else {
-        alert("Perfil de consumidor no encontrado - no puedes guardar.");
+        alert("Consumer profile not found - you cannot save.");
         setIsSaving(false);
         return;
       }
 
-      const listName = prompt("Nombre de la lista:", "Mi Lista de la Compra");
+      const listName = prompt("List name:", "My Shopping List");
       if (!listName) { setIsSaving(false); return; }
 
       // 2. Insert into shopping_lists
@@ -175,11 +175,11 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
 
       if (itemsError) throw itemsError;
 
-      alert("¡Lista guardada con éxito!");
+      alert("List saved successfully!");
 
     } catch (err: any) {
       console.error(err);
-      alert("Error al guardar la lista: " + err.message);
+      alert("Error saving list: " + err.message);
     } finally {
       setIsSaving(false);
     }
@@ -190,14 +190,14 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
       {/* Top Header */}
       <header className="shopping-header">
         <button className="btn-back-header" onClick={() => setView('shop')}>
-          <span className="icon">&#8592;</span> <span className="text">Volver</span>
+          <span className="icon">&#8592;</span> <span className="text">Return</span>
         </button>
         <div className="logo-container-header">
           <img src={logoImg} alt="SmartShop Logo" className="logo-header" />
         </div>
         <div className="header-right-actions">
           <button className="btn-profile-header" onClick={() => session ? setView('profile') : setView('login')}>
-            <span className="icon">{session ? '👤' : '🔑'}</span> <span className="text">{session ? 'Perfil' : 'Log in'}</span>
+            <span className="icon">{session ? '👤' : '🔑'}</span> <span className="text">{session ? 'Profile' : 'Log in'}</span>
           </button>
           <div className="cart-toggle-header" onClick={() => setIsCartOpen(!isCartOpen)}>
             <span className="cart-icon-header">🛒</span>
@@ -212,7 +212,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
         {/* Left Side: Products */}
         <div className="products-section">
           <div className="section-title">
-            🛒 <h2>Productos Disponibles</h2>
+            🛒 <h2>Available Products</h2>
           </div>
 
           <div className="filters-row">
@@ -228,7 +228,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
 
             <input
               type="text"
-              placeholder="Buscar producto por nombre"
+              placeholder="Search product by name"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="search-input"
@@ -237,7 +237,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
 
           <div className="products-grid-new">
             {loading ? (
-              <p>Cargando productos...</p>
+              <p>Loading products...</p>
             ) : filteredProducts.length > 0 ? (
               filteredProducts.map((p) => (
                 <div key={p.id} className="product-card">
@@ -260,14 +260,14 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
                     </div>
                   ) : (
                     <button className="btn-add-cart" onClick={() => addToCart(p)}>
-                      Añadir al carro
+                      Add to list
                     </button>
                   )}
                 </div>
               ))
             ) : (
               <div className="no-products-msg">
-                <p>No se encontraron productos.</p>
+                <p>No products found.</p>
               </div>
             )}
           </div>
@@ -276,12 +276,12 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
         {/* Right Side: Cart */}
         <div className={`cart-sidebar ${isCartOpen ? 'open' : ''}`}>
           <div className="cart-header">
-            <h3>📝 Lista de la Compra ({cartItemsCount} Items)</h3>
+            <h3>📝 Shopping List ({cartItemsCount} Items)</h3>
           </div>
 
           <div className="cart-items-list">
             {cart.length === 0 ? (
-              <p className="empty-cart">Tu lista está vacía</p>
+              <p className="empty-cart">Your list is empty</p>
             ) : (
               cart.map(item => (
                 <div key={item.id} className="cart-item-row">
@@ -300,7 +300,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
                         <button onClick={() => updateQuantity(item.id, 1)} className="btn-qty">+</button>
                       </div>
                       <button onClick={() => removeFromCart(item.id)} className="btn-remove">
-                        Eliminar
+                        Remove
                       </button>
                     </div>
                   </div>
@@ -310,13 +310,13 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
           </div>
 
           <div className="cart-total-section">
-            <span className="total-label">Total Estimado:</span>
+            <span className="total-label">Total Price:</span>
             <span className="total-amount">€{(Math.round(cartTotal * 100) / 100).toFixed(2)}</span>
           </div>
 
           {session && role !== 'Supermarket' && (
             <button className="btn-save-list" onClick={saveList} disabled={cart.length === 0 || isSaving}>
-              {isSaving ? 'Guardando...' : '💾 Guardar Lista'}
+              {isSaving ? 'Saving...' : '💾 Save List'}
             </button>
           )}
 
@@ -326,7 +326,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
               style={{ backgroundColor: '#3498db', marginTop: '10px' }}
               onClick={() => setView('saved-lists-filtered')}
             >
-              🚀 Continuar con lista creada
+              🚀 Continue with created list
             </button>
           )}
 
@@ -335,7 +335,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
             disabled={cart.length === 0}
             onClick={() => onCheckout?.(cart)}
           >
-            Finalizar Compra y Ver Ruta
+            End Shopping and See Route
           </button>
         </div>
 

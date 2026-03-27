@@ -27,9 +27,9 @@ export const ProductManagement = ({ supermarketId, setView }: { supermarketId: s
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
-  
+
   const initialForm = {
-    name: '', price: 0, category: '', subcategory: '', 
+    name: '', price: 0, category: '', subcategory: '',
     price_per_unit: '', format: '', image_url: '', stock_quantity: 0
   };
   const [formData, setFormData] = useState(initialForm);
@@ -42,7 +42,7 @@ export const ProductManagement = ({ supermarketId, setView }: { supermarketId: s
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('sup_id', supermarketId); 
+      .eq('sup_id', supermarketId);
 
     if (!error) setProducts(data || []);
   };
@@ -106,9 +106,9 @@ export const ProductManagement = ({ supermarketId, setView }: { supermarketId: s
   return (
     <div className="product-mgmt-container">
       <div className="header-actions">
-        <button className="back-btn" onClick={() => setView('manage-supermarkets')}>← Volver</button>
+        <button className="back-btn" onClick={() => setView('manage-supermarkets')}>← Return</button>
         <img src={logoImg} className="profile-main-logo" alt="SmartShop" />
-        
+
         <button className="add-product-btn" onClick={() => { setEditingProduct(null); setFormData(initialForm); setIsModalOpen(true); }}>
           Add product
         </button>
@@ -119,28 +119,28 @@ export const ProductManagement = ({ supermarketId, setView }: { supermarketId: s
         <table className="product-table">
           <thead>
             <tr>
-              <th>Acciones</th>
-              <th onClick={() => requestSort('category')}>Categoría {getSortIcon('category')}</th>
-              <th onClick={() => requestSort('subcategory')}>Subcategoría {getSortIcon('subcategory')}</th>
-              <th onClick={() => requestSort('name')}>Nombre {getSortIcon('name')}</th>
-              <th onClick={() => requestSort('price')}>Precio {getSortIcon('price')}</th>
-              <th onClick={() => requestSort('price_per_unit')}>Precio/Unidad {getSortIcon('price_per_unit')}</th>
-              <th onClick={() => requestSort('format')}>Formato {getSortIcon('format')}</th>
-              <th>Imagen_url</th>
+              <th>Actions</th>
+              <th onClick={() => requestSort('category')}>Category {getSortIcon('category')}</th>
+              <th onClick={() => requestSort('subcategory')}>Subcategory {getSortIcon('subcategory')}</th>
+              <th onClick={() => requestSort('name')}>Name {getSortIcon('name')}</th>
+              <th onClick={() => requestSort('price')}>Price {getSortIcon('price')}</th>
+              <th onClick={() => requestSort('price_per_unit')}>Price/Unit {getSortIcon('price_per_unit')}</th>
+              <th onClick={() => requestSort('format')}>Format {getSortIcon('format')}</th>
+              <th>Image URL</th>
             </tr>
           </thead>
           <tbody>
             {sortedProducts.length === 0 ? (
               /* Fila especial cuando la tabla está vacía */
               <tr>
-                <td colSpan={8} style={{ 
-                  textAlign: 'center', 
-                  padding: '50px', 
+                <td colSpan={8} style={{
+                  textAlign: 'center',
+                  padding: '50px',
                   color: '#94a3b8',
                   fontSize: '1.2rem',
                   backgroundColor: 'transparent'
                 }}>
-                  No se encontraron productos. Haz clic en "Add product" para comenzar.
+                  No products found. Click on "Add product" to start.
                 </td>
               </tr>
             ) : (
@@ -148,7 +148,7 @@ export const ProductManagement = ({ supermarketId, setView }: { supermarketId: s
                 <tr key={p.id}>
                   <td className="action-cells">
                     <button className="edit-btn" onClick={() => openEditModal(p)}>Edit</button>
-                    <button className="delete-btn" onClick={() => handleDelete(p.id!)}>Eliminate</button>
+                    <button className="delete-btn" onClick={() => handleDelete(p.id!)}>Delete</button>
                   </td>
                   <td>{p.category}</td>
                   <td>{p.subcategory}</td>
@@ -163,45 +163,45 @@ export const ProductManagement = ({ supermarketId, setView }: { supermarketId: s
           </tbody>
         </table>
       </div>
-      
+
       {/* (Modal se mantiene igual...) */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>{editingProduct ? 'Editar Producto' : 'Añadir Nuevo Producto'}</h3>
+            <h3>{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
             <div className="modal-grid">
               <div className="input-group">
-                <label>Categoría</label>
-                <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} />
+                <label>Category</label>
+                <input type="text" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
               </div>
               <div className="input-group">
-                <label>Subcategoría</label>
-                <input type="text" value={formData.subcategory} onChange={e => setFormData({...formData, subcategory: e.target.value})} />
+                <label>Subcategory</label>
+                <input type="text" value={formData.subcategory} onChange={e => setFormData({ ...formData, subcategory: e.target.value })} />
               </div>
               <div className="input-group">
-                <label>Nombre</label>
-                <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                <label>Name</label>
+                <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
               </div>
               <div className="input-group">
-                <label>Precio</label>
-                <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} />
+                <label>Price</label>
+                <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} />
               </div>
               <div className="input-group">
-                <label>Precio por unidad</label>
-                <input type="text" value={formData.price_per_unit} onChange={e => setFormData({...formData, price_per_unit: e.target.value})} />
+                <label>Price per unit</label>
+                <input type="text" value={formData.price_per_unit} onChange={e => setFormData({ ...formData, price_per_unit: e.target.value })} />
               </div>
               <div className="input-group">
-                <label>Formato</label>
-                <input type="text" value={formData.format} onChange={e => setFormData({...formData, format: e.target.value})} />
+                <label>Format</label>
+                <input type="text" value={formData.format} onChange={e => setFormData({ ...formData, format: e.target.value })} />
               </div>
               <div className="input-group full-width">
-                <label>Imagen URL</label>
-                <textarea rows={2} value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} />
+                <label>Image URL</label>
+                <textarea rows={2} value={formData.image_url} onChange={e => setFormData({ ...formData, image_url: e.target.value })} />
               </div>
             </div>
             <div className="modal-buttons">
-              <button className="btn-save" onClick={handleSave}>{editingProduct ? 'Actualizar' : 'Crear Producto'}</button>
-              <button className="btn-cancel" onClick={() => setIsModalOpen(false)}>Cancelar</button>
+              <button className="btn-save" onClick={handleSave}>{editingProduct ? 'Update' : 'Create Product'}</button>
+              <button className="btn-cancel" onClick={() => setIsModalOpen(false)}>Cancel</button>
             </div>
           </div>
         </div>

@@ -28,7 +28,6 @@ function HomePage({ setView }: { setView: (view: ViewState) => void }) {
     <div className="home-container">
       <div className="logo-container">
         <img src={logoImg} alt="SmartShop Logo" className="logo-image" />
-        <span className="smartshop-text">SmartShop</span>
       </div>
       <div className="central-box">
         <h2>¡BEGIN YOUR SHOP NOW!</h2>
@@ -40,7 +39,7 @@ function HomePage({ setView }: { setView: (view: ViewState) => void }) {
           Login/Register
         </button>
       </div>
-      <p className="footer-note">*Sin iniciar sesión no podrás guardar tus listas de la compra</p>
+      <p className="footer-note">*To save your shopping lists, please log in.</p>
     </div>
   );
 }
@@ -69,8 +68,12 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
       setSession(currentSession);
       if (event === 'SIGNED_IN') {
-        if (prevView === 'shop') setView('shop');
-        else setView('profile');
+        setView(currentView => {
+          if (currentView === 'login' || currentView === 'signup' || currentView === 'home') {
+            return prevView === 'shop' ? 'shop' : 'profile';
+          }
+          return currentView;
+        });
       }
       if (event === 'SIGNED_OUT') setView('home');
       if (event === "PASSWORD_RECOVERY") setView('reset-password');
@@ -104,9 +107,9 @@ function App() {
         return null;
       }
       return (
-        <ManageSupermarkets 
-          setView={setView} 
-          session={session} 
+        <ManageSupermarkets
+          setView={setView}
+          session={session}
           onEditProducts={(id) => {
             setSelectedMarketId(id);
             setView('edit-products');
@@ -124,9 +127,9 @@ function App() {
         return null;
       }
       return (
-        <ProductManagement 
-          supermarketId={selectedMarketId} 
-          setView={setView} 
+        <ProductManagement
+          supermarketId={selectedMarketId}
+          setView={setView}
         />
       );
 
@@ -152,38 +155,38 @@ function App() {
         />
       );
     case 'upload-products':
-        return <UploadProducts setView={setView} session={session} />;
+      return <UploadProducts setView={setView} session={session} />;
     case 'shopping-view':
-        return (
-          <ShoppingView
-            setView={setView}
-            market={selectedMarket}
-            session={session}
-            initialCart={cartItems}
-            onCheckout={(items: any[]) => {
-              setCartItems(items);
-              setView('route-view');
-            }}
-          />
-        );
+      return (
+        <ShoppingView
+          setView={setView}
+          market={selectedMarket}
+          session={session}
+          initialCart={cartItems}
+          onCheckout={(items: any[]) => {
+            setCartItems(items);
+            setView('route-view');
+          }}
+        />
+      );
     case 'route-view':
-        return <RouteView setView={setView} market={selectedMarket} cart={cartItems} />;
+      return <RouteView setView={setView} market={selectedMarket} cart={cartItems} />;
     case 'saved-lists':
     case 'saved-lists-filtered':
-        if (!session) return <Login setView={navigateTo} />;
-        return (
-          <SavedLists 
-            setView={setView} 
-            session={session} 
-            filterMarketId={view === 'saved-lists-filtered' ? selectedMarketId : null}
-            onEditList={(market: any, listItems: any[]) => {
-              setSelectedMarketId(market.id);
-              setSelectedMarket(market);
-              setCartItems(listItems);
-              setView('shopping-view');
-            }} 
-          />
-        );
+      if (!session) return <Login setView={navigateTo} />;
+      return (
+        <SavedLists
+          setView={setView}
+          session={session}
+          filterMarketId={view === 'saved-lists-filtered' ? selectedMarketId : null}
+          onEditList={(market: any, listItems: any[]) => {
+            setSelectedMarketId(market.id);
+            setSelectedMarket(market);
+            setCartItems(listItems);
+            setView('shopping-view');
+          }}
+        />
+      );
     default:
       return <HomePage setView={navigateTo} />;
   }

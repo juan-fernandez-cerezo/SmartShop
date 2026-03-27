@@ -84,12 +84,12 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
 
       <div className="profile-layout">
         <div className="profile-card">
-          <h2>PERFIL</h2>
+          <h2>PROFILE</h2>
 
           {role === 'Consumer' ? (
             <div className="name-row">
               <div className="name-col">
-                <label>Nombre</label>
+                <label>Name</label>
                 {isEditing ? (
                   <input name="first_name" value={formData.first_name} onChange={handleChange} className="edit-input" />
                 ) : (
@@ -97,7 +97,7 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
                 )}
               </div>
               <div className="name-col">
-                <label>Apellidos</label>
+                <label>Surname</label>
                 {isEditing ? (
                   <input name="last_name" value={formData.last_name} onChange={handleChange} className="edit-input" />
                 ) : (
@@ -123,14 +123,14 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
             </>
           )}
 
-          <label>Email de contacto</label>
+          <label>Contact Email</label>
           <div className="info-box" style={{ opacity: 0.7 }}>{session?.user?.email}</div>
 
-          <label>Tipo de Cuenta</label>
+          <label>Account Type</label>
           <div className="info-box" style={{ opacity: 0.7 }}>{role}</div>
 
           <button className="btn-edit" onClick={handleSave}>
-            {isEditing ? 'Guardar Cambios' : 'Editar Perfil'}
+            {isEditing ? 'Save Changes' : 'Edit Profile'}
           </button>
         </div>
 
@@ -146,15 +146,15 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
             </>
           ) : (
             <button className="btn-manage" onClick={() => setView('manage-supermarkets')}>
-              📦 Gestionar Tienda
+              📦 Manage Supermarket
             </button>
           )}
-          <button className="btn-logout" onClick={handleLogout}>Cerrar Sesión</button>
+          <button className="btn-logout" onClick={handleLogout}>Log out</button>
         </div>
       </div>
 
       <div className="go-home-footer" onClick={() => setView('home')}>
-        <span>←</span> VOLVER AL INICIO
+        <span>←</span> Return to Home
       </div>
     </div>
   );
