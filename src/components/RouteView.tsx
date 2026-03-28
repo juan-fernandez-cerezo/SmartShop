@@ -23,7 +23,7 @@ const gIdx = (x: number, y: number) => y * GW + x;
 /** All cells walkable by default; obstacle types become barriers. */
 const buildGrid = (zones: Zone[]): Uint8Array => {
   const g = new Uint8Array(GW * GH).fill(1);
-  const OBS = new Set(['Estantería', 'No transitable', 'Sección', 'Almacén']);
+  const OBS = new Set(['Estantería', 'No transitable', 'Sección', 'Almacén', 'Caja']);
   for (const z of zones) {
     if (!OBS.has(z.type)) continue;
     const x0 = Math.max(0, Math.floor(z.x * GW));
@@ -37,34 +37,30 @@ const buildGrid = (zones: Zone[]): Uint8Array => {
   return g;
 };
 
-// ─── BFS nearest walkable ─────────────────────────────────────────────────────
+// ─── Zone carving (allows walking into destination obstacle) ────────────────
 
-const nearestWalkable = (pt: GP, g: Uint8Array): GP | null => {
-  if (g[gIdx(pt.x, pt.y)]) return pt;
-  const queue: GP[] = [pt];
-  const seen = new Set([gIdx(pt.x, pt.y)]);
-  const DIRS = [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
-  while (queue.length) {
-    const c = queue.shift()!;
-    for (const [dx, dy] of DIRS) {
-      const nx = c.x + dx, ny = c.y + dy;
-      if (nx < 0 || nx >= GW || ny < 0 || ny >= GH) continue;
-      const k = gIdx(nx, ny);
-      if (seen.has(k)) continue;
-      seen.add(k);
-      if (g[k]) return { x: nx, y: ny };
-      queue.push({ x: nx, y: ny });
+const carveZone = (gOrig: Uint8Array, gCopy: Uint8Array, z: Zone) => {
+  const x0 = Math.max(0, Math.floor(z.x * GW));
+  const y0 = Math.max(0, Math.floor(z.y * GH));
+  const x1 = Math.min(GW, Math.ceil((z.x + z.width) * GW));
+  const y1 = Math.min(GH, Math.ceil((z.y + z.height) * GH));
+  for (let gy = y0; gy < y1; gy++)
+    for (let gx = x0; gx < x1; gx++) {
+      const idx = gIdx(gx, gy);
+      if (gOrig[idx] === 0) gCopy[idx] = 2; // 2 = heavy cost
     }
-  }
-  return null;
 };
 
 // ─── A* pathfinding ───────────────────────────────────────────────────────────
 
-const astar = (g: Uint8Array, rawStart: GP, rawEnd: GP): GP[] => {
-  const start = nearestWalkable(rawStart, g);
-  const end   = nearestWalkable(rawEnd,   g);
-  if (!start || !end) return [rawStart, rawEnd];
+const astar = (g: Uint8Array, az: Zone, bz: Zone): GP[] => {
+  const gCopy = new Uint8Array(g);
+  carveZone(g, gCopy, az);
+  carveZone(g, gCopy, bz);
+
+  const start = zoneGP(az);
+  const end   = zoneGP(bz);
+
   if (start.x === end.x && start.y === end.y) return [start];
 
   const h = (a: GP, b: GP) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
@@ -78,7 +74,7 @@ const astar = (g: Uint8Array, rawStart: GP, rawEnd: GP): GP[] => {
 
   type N = { x: number; y: number; f: number };
   const open: N[] = [{ x: start.x, y: start.y, f: h(start, end) }];
-  const DIRS = [[0,1],[1,0],[0,-1],[-1,0]];
+  const DIRS = [[0, 1], [1, 0], [0, -1], [-1, 0]];
   const MAX = GW * GH * 2;
   let iter = 0;
 
@@ -93,8 +89,11 @@ const astar = (g: Uint8Array, rawStart: GP, rawEnd: GP): GP[] => {
       const nx = cur.x + dx, ny = cur.y + dy;
       if (nx < 0 || nx >= GW || ny < 0 || ny >= GH) continue;
       const nk = gIdx(nx, ny);
-      if (cl[nk] || !g[nk]) continue;
-      const ng = gs[ck] + 1;
+      const cell = gCopy[nk];
+      if (cl[nk] || cell === 0) continue;
+      
+      const stepCost = cell === 2 ? 15 : 1;
+      const ng = gs[ck] + stepCost;
       if (ng < gs[nk]) {
         gs[nk] = ng; par[nk] = ck;
         open.push({ x: nx, y: ny, f: ng + h({ x: nx, y: ny }, end) });
@@ -102,7 +101,7 @@ const astar = (g: Uint8Array, rawStart: GP, rawEnd: GP): GP[] => {
     }
   }
 
-  if (par[ek] === -1 && ek !== sk) return [rawStart, rawEnd];
+  if (par[ek] === -1 && ek !== sk) return [start, end];
   const path: GP[] = [];
   let c = ek;
   while (c !== -1) { path.unshift({ x: c % GW, y: Math.floor(c / GW) }); c = par[c]; }
@@ -128,12 +127,12 @@ const rdp = (pts: GP[], eps: number): GP[] => {
 // ─── Coordinate helpers ───────────────────────────────────────────────────────
 
 const zoneGP = (z: Zone): GP => ({ x: Math.round((z.x + z.width / 2) * GW), y: Math.round((z.y + z.height / 2) * GH) });
-const toSVG  = (p: GP) => ({ x: (p.x / GW) * 100, y: (p.y / GH) * 100 });
+const toSVG = (p: GP) => ({ x: (p.x / GW) * 100, y: (p.y / GH) * 100 });
 
 // ─── TSP helpers ──────────────────────────────────────────────────────────────
 
 /** A* path length between two zones (corridor distance for TSP matrix) */
-const astarLen = (g: Uint8Array, a: Zone, b: Zone): number => astar(g, zoneGP(a), zoneGP(b)).length;
+const astarLen = (g: Uint8Array, a: Zone, b: Zone): number => astar(g, a, b).length;
 
 const tourCost = (order: number[], D: number[][]): number => {
   let c = 0;
@@ -159,9 +158,9 @@ const orOpt = (order: number[], D: number[][]): number[] => {
   while (improved) {
     improved = false;
     for (let i = 1; i < best.length; i++) {
-      const node    = best[i];
+      const node = best[i];
       const removed = best.filter((_, k) => k !== i);
-      const base    = tourCost(best, D);
+      const base = tourCost(best, D);
       for (let j = 1; j <= removed.length; j++) {
         const trial = [...removed.slice(0, j), node, ...removed.slice(j)];
         if (tourCost(trial, D) < base - 1) { best = trial; improved = true; break; }
@@ -175,15 +174,15 @@ const orOpt = (order: number[], D: number[][]): number[] => {
 // ─── Sidebar zone colors ──────────────────────────────────────────────────────
 
 const ZONE_COLORS: Record<string, { bg: string; border: string }> = {
-  Entrada:          { bg: 'rgba(34,197,94,0.28)',   border: '#16a34a' },
-  Salida:           { bg: 'rgba(16,185,129,0.28)',  border: '#059669' },
-  Estantería:       { bg: 'rgba(59,130,246,0.22)',  border: '#2563eb' },
-  Sección:          { bg: 'rgba(59,130,246,0.22)',  border: '#2563eb' },
-  Pasillo:          { bg: 'rgba(249,115,22,0.22)',  border: '#ea580c' },
-  Caja:             { bg: 'rgba(168,85,247,0.22)',  border: '#9333ea' },
-  Almacén:          { bg: 'rgba(239,68,68,0.22)',   border: '#dc2626' },
+  Entrada: { bg: 'rgba(34,197,94,0.28)', border: '#16a34a' },
+  Salida: { bg: 'rgba(16,185,129,0.28)', border: '#059669' },
+  Estantería: { bg: 'rgba(59,130,246,0.22)', border: '#2563eb' },
+  Sección: { bg: 'rgba(59,130,246,0.22)', border: '#2563eb' },
+  Pasillo: { bg: 'rgba(249,115,22,0.22)', border: '#ea580c' },
+  Caja: { bg: 'rgba(168,85,247,0.22)', border: '#9333ea' },
+  Almacén: { bg: 'rgba(239,68,68,0.22)', border: '#dc2626' },
   'No transitable': { bg: 'rgba(100,116,139,0.22)', border: '#475569' },
-  Otro:             { bg: 'rgba(107,114,128,0.22)', border: '#6b7280' },
+  Otro: { bg: 'rgba(107,114,128,0.22)', border: '#6b7280' },
 };
 const zoneColor = (t: string) => ZONE_COLORS[t] ?? ZONE_COLORS['Otro'];
 
@@ -212,10 +211,10 @@ const buildRoute = (zones: Zone[], cart: any[], grid: Uint8Array): Stop[] => {
     else unmatched.push(item);
   }
 
-  const entrance       = zones.find(z => z.type === 'Entrada') ?? zones[0];
+  const entrance = zones.find(z => z.type === 'Entrada') ?? zones[0];
   if (!entrance) return [];
   const cajaCandidates = zones.filter(z => z.type === 'Caja' || z.type === 'Salida');
-  const pool           = zones.filter(z =>
+  const pool = zones.filter(z =>
     zoneProducts[z.id]?.length &&
     z.id !== entrance.id &&
     !cajaCandidates.find(c => c.id === z.id)
@@ -223,7 +222,7 @@ const buildRoute = (zones: Zone[], cart: any[], grid: Uint8Array): Stop[] => {
 
   // Build A* pairwise distance matrix [entrance, ...pool]
   const pts = [entrance, ...pool];
-  const n   = pts.length;
+  const n = pts.length;
   const D: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
   for (let i = 0; i < n; i++)
     for (let j = i + 1; j < n; j++)
@@ -239,7 +238,7 @@ const buildRoute = (zones: Zone[], cart: any[], grid: Uint8Array): Stop[] => {
     bestOrder = [0, ...inner];
     for (const perm of genPerms(inner)) {
       const order = [0, ...perm];
-      const cost  = tourCost(order, D);
+      const cost = tourCost(order, D);
       if (cost < bestCost) { bestCost = cost; bestOrder = order; }
     }
   } else {
@@ -297,9 +296,9 @@ const buildRoute = (zones: Zone[], cart: any[], grid: Uint8Array): Stop[] => {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const RouteView = ({ setView, market, cart }: Props) => {
-  const [zones,   setZones]   = useState<Zone[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mapUrl,  setMapUrl]  = useState<string | null>(market?.map_image_url ?? null);
+  const [mapUrl, setMapUrl] = useState<string | null>(market?.map_image_url ?? null);
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
   const [activeStop, setActiveStop] = useState<number | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -356,9 +355,9 @@ export const RouteView = ({ setView, market, cart }: Props) => {
     if (stops.length < 2) return '';
     const allPts: GP[] = [];
     for (let i = 0; i < stops.length - 1; i++) {
-      const from = zoneGP(stops[i].zone);
-      const to   = zoneGP(stops[i + 1].zone);
-      const seg  = rdp(astar(walkableGrid, from, to), 0.8);
+      const az = stops[i].zone;
+      const bz = stops[i + 1].zone;
+      const seg = rdp(astar(walkableGrid, az, bz), 0.8);
       if (i === 0) allPts.push(...seg);
       else allPts.push(...seg.slice(1));
     }
@@ -447,7 +446,7 @@ export const RouteView = ({ setView, market, cart }: Props) => {
           ) : (
             <ul className="rv-stop-list">
               {stops.map(stop => {
-                const colors   = zoneColor(stop.zone.type);
+                const colors = zoneColor(stop.zone.type);
                 const isActive = activeStop === stop.order;
                 return (
                   <li key={stop.order} className={`rv-stop-item ${isActive ? 'rv-stop-item--active' : ''} ${stop.products.length === 0 ? 'rv-stop-item--empty' : ''}`} onClick={() => setActiveStop(isActive ? null : stop.order)}>

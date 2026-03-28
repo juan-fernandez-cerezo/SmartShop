@@ -14,7 +14,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
 
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Todas las secciones');
+  const [selectedCategory, setSelectedCategory] = useState('All sections');
 
   useEffect(() => {
     const fetchProducts = async () => {
