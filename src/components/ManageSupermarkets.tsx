@@ -23,10 +23,23 @@ export const ManageSupermarkets = ({ setView, session, onEditProducts, onEditMap
 
   useEffect(() => {
     const fetchMyMarkets = async () => {
+      // 1. Obtener el ID real del trabajador
+      const { data: staffData } = await supabase
+        .from('supermarket_staff')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (!staffData) {
+        setLoading(false);
+        return;
+      }
+
+      // 2. Recuperar todos los supermercados vinculados a ese trabajador
       const { data, error } = await supabase
         .from('supermarkets')
         .select('*')
-        .eq('user_id', session.user.id);
+        .eq('staff_id', staffData.id);
 
       if (error) {
         console.error(error);

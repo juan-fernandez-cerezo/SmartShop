@@ -16,30 +16,63 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All sections');
 
+  const [zones, setZones] = useState<any[]>([]);
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       if (!market?.id) return;
 
       setLoading(true);
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('sup_id', market.id);
+      // 1. Fetch products (with pagination to bypass 1000 rows limit)
+      let allProducts: any[] = [];
+      let from = 0;
+      let to = 999;
+      let hasMore = true;
 
-      if (error) {
-        console.error("Error de Supabase:", error);
-      } else {
-        setProducts(data || []);
+      while (hasMore) {
+        const { data: pData, error: pError } = await supabase
+          .from('products')
+          .select('*')
+          .eq('sup_id', market.id)
+          .range(from, to);
+
+        if (pError) {
+          console.error("Error fetching products:", pError);
+          break;
+        }
+
+        if (pData && pData.length > 0) {
+          allProducts = [...allProducts, ...pData];
+          if (pData.length < 1000) {
+            hasMore = false;
+          } else {
+            from += 1000;
+            to += 1000;
+          }
+        } else {
+          hasMore = false;
+        }
       }
+      setProducts(allProducts);
+
+      // 2. Fetch map zones to show all sections in dropdown
+      const { data: zData, error: zError } = await (supabase as any)
+        .from('supermarket_zones')
+        .select('name, type')
+        .eq('supermarket_id', market.id);
+        
+      if (zError) console.error("Error fetching zones:", zError);
+      else setZones(zData || []);
+
       setLoading(false);
     };
 
-    fetchProducts();
+    fetchData();
   }, [market]);
 
   useEffect(() => {
     const checkSavedList = async () => {
-      if (!session?.user || !market?.id || role === 'Supermarket') return;
+      if (!session?.user || !market?.id || role === 'Supermarket_Staff') return;
 
       try {
         const { data: consumer } = await supabase
@@ -69,14 +102,23 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
 
   // Derive categories
   const categories = useMemo(() => {
-    const cats = products.map(p => p.category).filter(Boolean);
-    return ['All sections', ...new Set(cats)];
-  }, [products]);
+    const prodCats = products.map(p => p.category).filter(Boolean);
+    const zoneCats = zones
+      .filter(z => ['Shelf', 'Estantería', 'Sección', 'Section'].includes(z.type))
+      .map(z => z.name);
+      
+    // Combine and remove duplicates (case-insensitive deduplication could be better, but exact is fine here since they pick from the same dropdown)
+    const allUnique = Array.from(new Set([...zoneCats, ...prodCats].filter(Boolean)));
+    // Sort them alphabetically
+    allUnique.sort((a, b) => a.localeCompare(b));
+    return ['All sections', ...allUnique];
+  }, [products, zones]);
 
   // Filtered products
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
-      const matchCat = selectedCategory === 'All sections' || p.category === selectedCategory;
+      const matchCat = selectedCategory === 'All sections' || 
+                       (p.category || '').toLowerCase() === selectedCategory.toLowerCase();
       const matchSearch = p.name?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchCat && matchSearch;
     });
@@ -314,7 +356,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
             <span className="total-amount">€{(Math.round(cartTotal * 100) / 100).toFixed(2)}</span>
           </div>
 
-          {session && role !== 'Supermarket' && (
+          {session && role !== 'Supermarket_Staff' && (
             <button className="btn-save-list" onClick={saveList} disabled={cart.length === 0 || isSaving}>
               {isSaving ? 'Saving...' : '💾 Save List'}
             </button>

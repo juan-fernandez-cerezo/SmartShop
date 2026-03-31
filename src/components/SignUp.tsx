@@ -12,13 +12,11 @@ export const SignUp = ({ setView }: ComponentProps) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'Consumer' | 'Supermarket'>('Consumer');
+  const [role, setRole] = useState<'Consumer' | 'Supermarket_Staff'>('Consumer');
 
   // Campos dinámicos
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [marketName, setMarketName] = useState('');
-  const [marketSurname, setMarketSurname] = useState('');
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +27,10 @@ export const SignUp = ({ setView }: ComponentProps) => {
       options: {
         data: {
           role: role,
-          first_name: role === 'Consumer' ? firstName : undefined,
-          last_name: role === 'Consumer' ? lastName : undefined,
-          market_name: role === 'Supermarket' ? marketName : undefined,
-          market_surname: role === 'Supermarket' ? marketSurname : undefined,
+          first_name: firstName,
+          last_name: lastName,
+          name: firstName,
+          surname: lastName,
         },
         emailRedirectTo: window.location.origin
       }
@@ -41,7 +39,7 @@ export const SignUp = ({ setView }: ComponentProps) => {
     if (error) {
       alert(error.message);
     } else {
-      alert("¡Registro casi listo! Revisa tu email para verificar la cuenta.");
+      alert("¡Registration almost ready! Check your email to verify the account.");
       setView('login');
     }
   };
@@ -53,14 +51,14 @@ export const SignUp = ({ setView }: ComponentProps) => {
       <div className="right-side">
         <div className="auth-card">
           <img src={logoImg} alt="SmartShop Logo" className="card-logo" />
-          <h2>Crear Cuenta</h2>
+          <h2>Create an account</h2>
 
           <form onSubmit={handleSignUp}>
             <div className="input-group">
               <label>Type of user</label>
               <select value={role} onChange={(e) => setRole(e.target.value as any)}>
                 <option value="Consumer">I am a consumer</option>
-                <option value="Supermarket">I am a supermarket personal</option>
+                <option value="Supermarket_Staff">I am a supermarket personal</option>
               </select>
             </div>
 
@@ -69,24 +67,13 @@ export const SignUp = ({ setView }: ComponentProps) => {
             </div>
 
             <div className="input-group">
-              <input type="password" placeholder="Contraseña" required onChange={(e) => setPassword(e.target.value)} />
+              <input type="password" placeholder="Password" required onChange={(e) => setPassword(e.target.value)} />
             </div>
 
-            {role === 'Consumer' ? (
-              <div className="input-row">
-                <input placeholder="Nombre" required onChange={(e) => setFirstName(e.target.value)} />
-                <input placeholder="Apellidos" required onChange={(e) => setLastName(e.target.value)} />
-              </div>
-            ) : (
-              <>
-                <div className="input-group">
-                  <input placeholder="Name of the Supermarket member" required onChange={(e) => setMarketName(e.target.value)} />
-                </div>
-                <div className="input-group">
-                  <input placeholder="Surname of the Supermarket worker" required onChange={(e) => setMarketSurname(e.target.value)} />
-                </div>
-              </>
-            )}
+            <div className="input-row">
+              <input placeholder="First name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              <input placeholder="Last name" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            </div>
 
             <button type="submit" className="btn-auth">Register</button>
           </form>

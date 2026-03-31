@@ -5,7 +5,7 @@ import type { ViewState } from '../App';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ZoneType = 'Entrada' | 'Estantería' | 'Caja' | 'No transitable' | 'Salida';
+type ZoneType = 'Entrance' | 'Shelf' | 'Cashier' | 'No transitable' | 'Exit';
 
 interface Zone {
   id: string;
@@ -22,20 +22,20 @@ interface DrawingRect {
 }
 
 const ZONE_COLORS: Record<ZoneType, { bg: string; border: string }> = {
-  Entrada: { bg: 'rgba(34,197,94,0.28)', border: '#16a34a' },
-  Salida: { bg: 'rgba(16,185,129,0.28)', border: '#059669' },
-  Estantería: { bg: 'rgba(59,130,246,0.28)', border: '#2563eb' },
-  Caja: { bg: 'rgba(168,85,247,0.28)', border: '#9333ea' },
+  Entrance: { bg: 'rgba(34,197,94,0.28)', border: '#16a34a' },
+  Exit: { bg: 'rgba(16,185,129,0.28)', border: '#059669' },
+  Shelf: { bg: 'rgba(59,130,246,0.28)', border: '#2563eb' },
+  Cashier: { bg: 'rgba(168,85,247,0.28)', border: '#9333ea' },
   'No transitable': { bg: 'rgba(100,116,139,0.35)', border: '#475569' },
 };
 
-const ZONE_TYPES: ZoneType[] = ['Entrada', 'Salida', 'Estantería', 'Caja', 'No transitable'];
+const ZONE_TYPES: ZoneType[] = ['Entrance', 'Exit', 'Shelf', 'Cashier', 'No transitable'];
 
 const ZONE_ICONS: Record<ZoneType, string> = {
-  Entrada: '🚪',
-  Salida: '🏁',
-  Estantería: '🛒',
-  Caja: '💳',
+  Entrance: '🚪',
+  Exit: '🏁',
+  Shelf: '🛒',
+  Cashier: '💳',
   'No transitable': '🚫',
 };
 
@@ -52,7 +52,7 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
   const [showModal, setShowModal] = useState(false);
   const [pendingRect, setPendingRect] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [newZoneName, setNewZoneName] = useState('');
-  const [newZoneType, setNewZoneType] = useState<ZoneType>('Estantería');
+  const [newZoneType, setNewZoneType] = useState<ZoneType>('Shelf');
   const [hoveredZoneId, setHoveredZoneId] = useState<string | null>(null);
   const [editingZoneId, setEditingZoneId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -84,26 +84,44 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
 
   // ── Canvas helpers ───────────────────────────────────────────────────────────
 
-  const toRelative = useCallback((e: React.MouseEvent) => {
+  const toRelativeCoord = useCallback((clientX: number, clientY: number) => {
     const img = imgRef.current;
     if (!img) return { rx: 0, ry: 0 };
     const r = img.getBoundingClientRect();
     return {
-      rx: Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)),
-      ry: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)),
+      rx: Math.max(0, Math.min(1, (clientX - r.left) / r.width)),
+      ry: Math.max(0, Math.min(1, (clientY - r.top) / r.height)),
     };
   }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (showModal || editingZoneId) return;
-    const { rx, ry } = toRelative(e);
+    const { rx, ry } = toRelativeCoord(e.clientX, e.clientY);
     setDrawing({ startX: rx, startY: ry, currentX: rx, currentY: ry });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!drawing) return;
-    const { rx, ry } = toRelative(e);
+    const { rx, ry } = toRelativeCoord(e.clientX, e.clientY);
     setDrawing(prev => prev ? { ...prev, currentX: rx, currentY: ry } : null);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (showModal || editingZoneId) return;
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const { rx, ry } = toRelativeCoord(touch.clientX, touch.clientY);
+      setDrawing({ startX: rx, startY: ry, currentX: rx, currentY: ry });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!drawing) return;
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const { rx, ry } = toRelativeCoord(touch.clientX, touch.clientY);
+      setDrawing(prev => prev ? { ...prev, currentX: rx, currentY: ry } : null);
+    }
   };
 
   const handleMouseUp = () => {
@@ -130,7 +148,7 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
     }]);
     setShowModal(false);
     setNewZoneName('');
-    setNewZoneType('Estantería');
+    setNewZoneType('Shelf');
     setPendingRect(null);
   };
 
@@ -234,7 +252,9 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
           <div className="dz-hint"><span>🖱️</span> Haz clic y arrastra para definir una zona</div>
 
           {mapUrl ? (
-            <div className="dz-map-container" ref={containerRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+            <div className="dz-map-container" ref={containerRef} 
+                 onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
+                 onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleMouseUp} onTouchCancel={handleMouseUp}>
               <img ref={imgRef} src={mapUrl} alt="Mapa del supermercado" className="dz-map-img" draggable={false} />
               {zones.map(renderZoneOverlay)}
               {renderDrawingRect()}
@@ -259,7 +279,7 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
 
         {/* Sidebar */}
         <div className="dz-sidebar">
-          <h2 className="dz-sidebar-title">Zonas definidas <span className="dz-badge">{zones.length}</span></h2>
+          <h2 className="dz-sidebar-title">Defined zones <span className="dz-badge">{zones.length}</span></h2>
 
           {zones.length === 0 ? (
             <div className="dz-sidebar-empty">

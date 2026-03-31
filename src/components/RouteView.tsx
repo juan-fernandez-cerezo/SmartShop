@@ -23,7 +23,7 @@ const gIdx = (x: number, y: number) => y * GW + x;
 /** All cells walkable by default; obstacle types become barriers. */
 const buildGrid = (zones: Zone[]): Uint8Array => {
   const g = new Uint8Array(GW * GH).fill(1);
-  const OBS = new Set(['Estantería', 'No transitable', 'Sección', 'Almacén', 'Caja']);
+  const OBS = new Set(['Shelf', 'No transitable', 'Section', 'Warehouse', 'Cashier']);
   for (const z of zones) {
     if (!OBS.has(z.type)) continue;
     const x0 = Math.max(0, Math.floor(z.x * GW));
@@ -37,39 +37,47 @@ const buildGrid = (zones: Zone[]): Uint8Array => {
   return g;
 };
 
-// ─── Zone carving (allows walking into destination obstacle) ────────────────
+// ─── Zone access points (find nearest aisle) ────────────────────────────────
 
-const carveZone = (gOrig: Uint8Array, gCopy: Uint8Array, z: Zone) => {
-  const x0 = Math.max(0, Math.floor(z.x * GW));
-  const y0 = Math.max(0, Math.floor(z.y * GH));
-  const x1 = Math.min(GW, Math.ceil((z.x + z.width) * GW));
-  const y1 = Math.min(GH, Math.ceil((z.y + z.height) * GH));
-  for (let gy = y0; gy < y1; gy++)
-    for (let gx = x0; gx < x1; gx++) {
-      const idx = gIdx(gx, gy);
-      if (gOrig[idx] === 0) gCopy[idx] = 2; // 2 = heavy cost
+const getAccessPoint = (g: Uint8Array, cx: number, cy: number): GP => {
+  if (g[gIdx(cx, cy)] === 1) return { x: cx, y: cy };
+  const q: GP[] = [{ x: cx, y: cy }];
+  const cl = new Uint8Array(GW * GH);
+  cl[gIdx(cx, cy)] = 1;
+  const DIRS = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+  let iter = 0;
+  while (q.length && iter++ < 10000) {
+    const cur = q.shift()!;
+    for (const [dx, dy] of DIRS) {
+      const nx = cur.x + dx, ny = cur.y + dy;
+      if (nx < 0 || nx >= GW || ny < 0 || ny >= GH) continue;
+      const nk = gIdx(nx, ny);
+      if (g[nk] === 1) return { x: nx, y: ny };
+      if (!cl[nk]) { cl[nk] = 1; q.push({ x: nx, y: ny }); }
     }
+  }
+  return { x: cx, y: cy };
 };
 
 // ─── A* pathfinding ───────────────────────────────────────────────────────────
 
 const astar = (g: Uint8Array, az: Zone, bz: Zone): GP[] => {
-  const gCopy = new Uint8Array(g);
-  carveZone(g, gCopy, az);
-  carveZone(g, gCopy, bz);
+  const ca = zoneGP(az);
+  const cb = zoneGP(bz);
+  const start = getAccessPoint(g, ca.x, ca.y);
+  const end = getAccessPoint(g, cb.x, cb.y);
 
-  const start = zoneGP(az);
-  const end   = zoneGP(bz);
-
-  if (start.x === end.x && start.y === end.y) return [start];
+  if (start.x === end.x && start.y === end.y) {
+    return (ca.x === cb.x && ca.y === cb.y) ? [ca] : [ca, start, cb];
+  }
 
   const h = (a: GP, b: GP) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
   const INF = 1e9;
-  const gs  = new Float32Array(GW * GH).fill(INF);
+  const gs = new Float32Array(GW * GH).fill(INF);
   const par = new Int32Array(GW * GH).fill(-1);
-  const cl  = new Uint8Array(GW * GH);
-  const sk  = gIdx(start.x, start.y);
-  const ek  = gIdx(end.x,   end.y);
+  const cl = new Uint8Array(GW * GH);
+  const sk = gIdx(start.x, start.y);
+  const ek = gIdx(end.x, end.y);
   gs[sk] = 0;
 
   type N = { x: number; y: number; f: number };
@@ -81,7 +89,7 @@ const astar = (g: Uint8Array, az: Zone, bz: Zone): GP[] => {
   while (open.length && iter++ < MAX) {
     open.sort((a, b) => a.f - b.f);
     const cur = open.shift()!;
-    const ck  = gIdx(cur.x, cur.y);
+    const ck = gIdx(cur.x, cur.y);
     if (cl[ck]) continue;
     cl[ck] = 1;
     if (ck === ek) break;
@@ -89,11 +97,10 @@ const astar = (g: Uint8Array, az: Zone, bz: Zone): GP[] => {
       const nx = cur.x + dx, ny = cur.y + dy;
       if (nx < 0 || nx >= GW || ny < 0 || ny >= GH) continue;
       const nk = gIdx(nx, ny);
-      const cell = gCopy[nk];
+      const cell = g[nk];
       if (cl[nk] || cell === 0) continue;
-      
-      const stepCost = cell === 2 ? 15 : 1;
-      const ng = gs[ck] + stepCost;
+
+      const ng = gs[ck] + 1;
       if (ng < gs[nk]) {
         gs[nk] = ng; par[nk] = ck;
         open.push({ x: nx, y: ny, f: ng + h({ x: nx, y: ny }, end) });
@@ -101,11 +108,12 @@ const astar = (g: Uint8Array, az: Zone, bz: Zone): GP[] => {
     }
   }
 
-  if (par[ek] === -1 && ek !== sk) return [start, end];
+  if (par[ek] === -1 && ek !== sk) return [ca, start, end, cb];
   const path: GP[] = [];
   let c = ek;
   while (c !== -1) { path.unshift({ x: c % GW, y: Math.floor(c / GW) }); c = par[c]; }
-  return path;
+
+  return [ca, ...path, cb];
 };
 
 // ─── RDP path simplification ─────────────────────────────────────────────────
@@ -174,17 +182,17 @@ const orOpt = (order: number[], D: number[][]): number[] => {
 // ─── Sidebar zone colors ──────────────────────────────────────────────────────
 
 const ZONE_COLORS: Record<string, { bg: string; border: string }> = {
-  Entrada: { bg: 'rgba(34,197,94,0.28)', border: '#16a34a' },
-  Salida: { bg: 'rgba(16,185,129,0.28)', border: '#059669' },
-  Estantería: { bg: 'rgba(59,130,246,0.22)', border: '#2563eb' },
-  Sección: { bg: 'rgba(59,130,246,0.22)', border: '#2563eb' },
-  Pasillo: { bg: 'rgba(249,115,22,0.22)', border: '#ea580c' },
-  Caja: { bg: 'rgba(168,85,247,0.22)', border: '#9333ea' },
-  Almacén: { bg: 'rgba(239,68,68,0.22)', border: '#dc2626' },
+  Entrance: { bg: 'rgba(34,197,94,0.28)', border: '#16a34a' },
+  Exit: { bg: 'rgba(16,185,129,0.28)', border: '#059669' },
+  Shelf: { bg: 'rgba(59,130,246,0.22)', border: '#2563eb' },
+  Section: { bg: 'rgba(59,130,246,0.22)', border: '#2563eb' },
+  Aisle: { bg: 'rgba(249,115,22,0.22)', border: '#ea580c' },
+  Cashier: { bg: 'rgba(168,85,247,0.22)', border: '#9333ea' },
+  Warehouse: { bg: 'rgba(239,68,68,0.22)', border: '#dc2626' },
   'No transitable': { bg: 'rgba(100,116,139,0.22)', border: '#475569' },
-  Otro: { bg: 'rgba(107,114,128,0.22)', border: '#6b7280' },
+  Other: { bg: 'rgba(107,114,128,0.22)', border: '#6b7280' },
 };
-const zoneColor = (t: string) => ZONE_COLORS[t] ?? ZONE_COLORS['Otro'];
+const zoneColor = (t: string) => ZONE_COLORS[t] ?? ZONE_COLORS['Other'];
 
 // ─── Match cart item to zone ──────────────────────────────────────────────────
 
@@ -211,9 +219,9 @@ const buildRoute = (zones: Zone[], cart: any[], grid: Uint8Array): Stop[] => {
     else unmatched.push(item);
   }
 
-  const entrance = zones.find(z => z.type === 'Entrada') ?? zones[0];
+  const entrance = zones.find(z => z.type === 'Entrance') ?? zones[0];
   if (!entrance) return [];
-  const cajaCandidates = zones.filter(z => z.type === 'Caja' || z.type === 'Salida');
+  const cajaCandidates = zones.filter(z => z.type === 'Cashier' || z.type === 'Exit');
   const pool = zones.filter(z =>
     zoneProducts[z.id]?.length &&
     z.id !== entrance.id &&
@@ -308,16 +316,21 @@ export const RouteView = ({ setView, market, cart }: Props) => {
     if (!market?.id) { setLoading(false); return; }
     const load = async () => {
       try {
-        const { data: md } = await supabase.from('supermarkets').select('map_image_url,user_id').eq('id', market.id).single();
+        const { data: md } = await supabase.from('supermarkets').select('map_image_url,staff_id').eq('id', market.id).single();
         if (md?.map_image_url) {
           setMapUrl(md.map_image_url);
-        } else if (md?.user_id) {
-          const { data: files } = await supabase.storage.from('supermarket-maps').list(md.user_id, { limit: 10, sortBy: { column: 'created_at', order: 'desc' } });
-          if (files?.length) {
-            const { data: u } = supabase.storage.from('supermarket-maps').getPublicUrl(`${md.user_id}/${files[0].name}`);
-            if (u?.publicUrl) {
-              setMapUrl(u.publicUrl);
-              await supabase.from('supermarkets').update({ map_image_url: u.publicUrl }).eq('id', market.id);
+        } else if (md?.staff_id) {
+          const { data: staff } = await supabase.from('supermarket_staff').select('user_id').eq('id', md.staff_id).single();
+          const userId = staff?.user_id;
+
+          if (userId) {
+            const { data: files } = await supabase.storage.from('supermarket-maps').list(userId, { limit: 10, sortBy: { column: 'created_at', order: 'desc' } });
+            if (files?.length) {
+              const { data: u } = supabase.storage.from('supermarket-maps').getPublicUrl(`${userId}/${files[0].name}`);
+              if (u?.publicUrl) {
+                setMapUrl(u.publicUrl);
+                await supabase.from('supermarkets').update({ map_image_url: u.publicUrl }).eq('id', market.id);
+              }
             }
           }
         }
@@ -382,14 +395,14 @@ export const RouteView = ({ setView, market, cart }: Props) => {
     <div className="rv-page">
       {/* Header */}
       <div className="rv-header">
-        <button className="rv-btn-back" onClick={() => setView('shopping-view')}>← Volver a la tienda</button>
+        <button className="rv-btn-back" onClick={() => setView('shopping-view')}>← Back to the store</button>
         <div>
-          <h1 className="rv-title">🗺️ Tu Ruta de Compra</h1>
-          <p className="rv-subtitle">{market?.name} &mdash; {stops.filter(s => s.products.length > 0).length} paradas</p>
+          <h1 className="rv-title">🗺️ Your Shopping Route</h1>
+          <p className="rv-subtitle">{market?.name} &mdash; {stops.filter(s => s.products.length > 0).length} stops</p>
         </div>
         <div className="rv-header-stats">
-          <span className="rv-stat">🛒 {cart.length} productos</span>
-          <span className="rv-stat">📍 {stops.length} paradas</span>
+          <span className="rv-stat">🛒 {cart.length} products</span>
+          <span className="rv-stat">📍 {stops.length} stops</span>
         </div>
       </div>
 
@@ -397,11 +410,11 @@ export const RouteView = ({ setView, market, cart }: Props) => {
         {/* Map Panel */}
         <div className="rv-map-panel">
           {!mapUrl ? (
-            <div className="rv-no-map"><p>⚠️ Este supermercado no tiene mapa configurado.</p></div>
+            <div className="rv-no-map"><p>⚠️ This supermarket does not have a map configured.</p></div>
           ) : !hasZones ? (
             <div className="rv-no-zones">
               <img src={mapUrl} alt="Mapa" className="rv-map-img-only" />
-              <div className="rv-no-zones-msg">⚠️ No hay zonas definidas. Ve a "Editar mapa" para configurarlas.</div>
+              <div className="rv-no-zones-msg">⚠️ No zones defined. Go to "Edit map" to configure them.</div>
             </div>
           ) : (
             <div className="rv-map-container">
@@ -429,19 +442,19 @@ export const RouteView = ({ setView, market, cart }: Props) => {
           )}
 
           <div className="rv-legend">
-            <span className="rv-legend-item"><span className="rv-dot" style={{ background: '#f97316' }} /> Parada con productos</span>
-            <span className="rv-legend-item"><span className="rv-dot" style={{ background: '#94a3b8' }} /> Paso de tránsito</span>
-            <span className="rv-legend-item rv-legend-line"><span className="rv-line-sample" /> Ruta óptima</span>
+            <span className="rv-legend-item"><span className="rv-dot" style={{ background: '#f97316' }} /> Stop with products</span>
+            <span className="rv-legend-item"><span className="rv-dot" style={{ background: '#94a3b8' }} /> Transit stop</span>
+            <span className="rv-legend-item rv-legend-line"><span className="rv-line-sample" /> Optimal route</span>
           </div>
         </div>
 
         {/* Sidebar */}
         <div className="rv-sidebar">
-          <h2 className="rv-sidebar-title">📋 Lista de paradas</h2>
+          <h2 className="rv-sidebar-title">📋 List of stops</h2>
           {stops.length === 0 ? (
             <div className="rv-sidebar-empty">
-              <p>No hay paradas que mostrar.</p>
-              <p>Asegúrate de tener zonas definidas en el mapa.</p>
+              <p>No stops to show.</p>
+              <p>Make sure you have zones defined on the map.</p>
             </div>
           ) : (
             <ul className="rv-stop-list">
@@ -467,7 +480,7 @@ export const RouteView = ({ setView, market, cart }: Props) => {
                           ))}
                         </ul>
                       ) : (
-                        <p className="rv-stop-no-products">Paso de tránsito</p>
+                        <p className="rv-stop-no-products">Transit stop</p>
                       )}
                     </div>
                   </li>
@@ -477,8 +490,8 @@ export const RouteView = ({ setView, market, cart }: Props) => {
           )}
 
           <div className="rv-summary">
-            <div className="rv-summary-row"><span>Total productos</span><strong>{cart.reduce((a, i) => a + i.quantity, 0)}</strong></div>
-            <div className="rv-summary-row"><span>Total estimado</span><strong>{cart.reduce((a, i) => a + i.price * i.quantity, 0).toFixed(2)} €</strong></div>
+            <div className="rv-summary-row"><span>Total products</span><strong>{cart.reduce((a, i) => a + i.quantity, 0)}</strong></div>
+            <div className="rv-summary-row"><span>Estimated total</span><strong>{cart.reduce((a, i) => a + i.price * i.quantity, 0).toFixed(2)} €</strong></div>
           </div>
         </div>
       </div>

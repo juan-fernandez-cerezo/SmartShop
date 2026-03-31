@@ -147,6 +147,7 @@
   user-select: none;
   align-self: flex-start;
   max-width: 100%;
+  touch-action: none;
 }
 
 .dz-map-img {

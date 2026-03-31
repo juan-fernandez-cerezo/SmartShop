@@ -27,13 +27,26 @@ export const RegisterMarket = ({ setView, session }: { setView: (v: ViewState) =
     // Obtenemos la imagen correspondiente al nombre seleccionado
     const imageUrl = marketImages[name];
 
+    // Primero buscamos el ID real de supermarket_staff (diferente al Auth ID internamente)
+    const { data: staffData, error: staffError } = await supabase
+      .from('supermarket_staff')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (staffError || !staffData) {
+      alert("Error: No se ha podido verificar tu perfil de staff.");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase
       .from('supermarkets')
       .insert([
         {
           name,
           location,
-          user_id: session.user.id,
+          staff_id: staffData.id,
           image_url: imageUrl, // <-- Se guarda la URL automáticamente
           status: 'Draft'
         }

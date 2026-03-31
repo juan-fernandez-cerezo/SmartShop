@@ -14,9 +14,7 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     first_name: userMetadata?.first_name || '',
-    last_name: userMetadata?.last_name || '',
-    market_name: userMetadata?.market_name || '',
-    market_surname: userMetadata?.market_surname || ''
+    last_name: userMetadata?.last_name || ''
   });
 
   const handleLogout = async () => {
@@ -54,8 +52,8 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
         const { error } = await supabase
           .from('supermarket_staff')
           .update({
-            first_name: formData.market_name,
-            last_name: formData.market_surname
+            first_name: formData.first_name,
+            last_name: formData.last_name
           })
           .eq('user_id', authId);
         dbError = error;
@@ -71,6 +69,23 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
       }
     } else {
       setIsEditing(true);
+    }
+  };
+
+  const handleEliminateAccount = async () => {
+    const confirmed = window.confirm("Sure you want to eliminate your account? You will not be able to recover your data.");
+    if (confirmed) {
+      // Nota: Supabase bloquea por seguridad el borrado de usuarios desde el frontend ('auth.users').
+      // Para que funcione al 100%, se asume que tienes (o crearás) una función rpc 'delete_user' en Supabase.
+      const { error } = await (supabase.rpc as any)('delete_user');
+
+      if (error) {
+        alert("Could not delete account. Make sure a delete_user function exists in your database: " + error.message);
+      } else {
+        // Sign out first, then we can clear and redirect
+        await supabase.auth.signOut();
+        setView('home');
+      }
     }
   };
 
@@ -109,16 +124,16 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
             <>
               <label>Staff member name</label>
               {isEditing ? (
-                <input name="market_name" value={formData.market_name} onChange={handleChange} className="edit-input" />
+                <input name="first_name" value={formData.first_name} onChange={handleChange} className="edit-input" />
               ) : (
-                <div className="info-box">{formData.market_name}</div>
+                <div className="info-box">{formData.first_name}</div>
               )}
 
               <label>Staff member surname</label>
               {isEditing ? (
-                <input name="market_surname" value={formData.market_surname} onChange={handleChange} className="edit-input" />
+                <input name="last_name" value={formData.last_name} onChange={handleChange} className="edit-input" />
               ) : (
-                <div className="info-box">{formData.market_surname}</div>
+                <div className="info-box">{formData.last_name}</div>
               )}
             </>
           )}
@@ -150,11 +165,17 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
             </button>
           )}
           <button className="btn-logout" onClick={handleLogout}>Log out</button>
+
+          <div className="danger-zone" style={{ marginTop: '20px', borderTop: '1px solid #ccc', paddingTop: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <button className="btn-eliminate" onClick={handleEliminateAccount} style={{ backgroundColor: '#dc2626', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Eliminate account
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="go-home-footer" onClick={() => setView('home')}>
-        <span>←</span> Return to Home
+        <span>←</span> Return Home
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export const UpdatePassword = () => {
       alert("Error: " + error.message);
       setLoading(false);
     } else {
-      alert("¡Contraseña actualizada con éxito!");
+      alert("¡Password updated successfully!");
       // 2. Ahora que ya se cambió, cerramos la sesión temporal 
       // y mandamos al usuario al Login para que entre con su nueva clave
       await supabase.auth.signOut();
@@ -30,22 +30,22 @@ export const UpdatePassword = () => {
       <div className="left-side"></div>
       <div className="right-side">
         <div className="login-card">
-          <h2>Nueva contraseña</h2>
-          <p style={{marginBottom: '20px', color: '#666'}}>
-            Introduce tu nueva clave. No cierres sesión hasta completar este paso.
+          <h2>New password</h2>
+          <p style={{ marginBottom: '20px', color: '#666' }}>
+            Introduce your new password. Don't close the session until you complete this step.
           </p>
           <form onSubmit={handleUpdate}>
             <div className="input-group">
-              <input 
-                type="password" 
-                placeholder="Nueva contraseña" 
-                required 
+              <input
+                type="password"
+                placeholder="New password"
+                required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} 
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <button type="submit" className="btn-login" disabled={loading}>
-              {loading ? 'Actualizando...' : 'Guardar nueva contraseña'}
+              {loading ? 'Updating...' : 'Save new password'}
             </button>
           </form>
         </div>

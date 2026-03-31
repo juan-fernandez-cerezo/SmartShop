@@ -4,10 +4,10 @@ import type { Database } from '../types/database.types';
 
 // We extract the Row types from our generated database types
 type Consumer = Database['public']['Tables']['consumers']['Row'];
-type Supermarket = Database['public']['Tables']['supermarkets']['Row'];
+type SupermarketStaff = Database['public']['Tables']['supermarket_staff']['Row'];
 
 export function useProfile() {
-  const [profile, setProfile] = useState<Consumer | Supermarket | null>(null);
+  const [profile, setProfile] = useState<Consumer | SupermarketStaff | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,9 +28,9 @@ export function useProfile() {
             .eq('user_id', user.id)
             .single();
           setProfile(data);
-        } else if (role === 'Supermarket') {
+        } else if (role === 'Supermarket_Staff') {
           const { data } = await supabase
-            .from('supermarkets')
+            .from('supermarket_staff')
             .select('*')
             .eq('user_id', user.id)
             .single();

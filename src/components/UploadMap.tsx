@@ -45,29 +45,40 @@ export const UploadMap = ({ setView, session, onMapUploaded }: UploadMapProps) =
         .from('supermarket-maps')
         .getPublicUrl(filePath);
 
-      // C. Actualizar el último supermercado creado por este usuario
-      const { data: lastMarket } = await supabase
-        .from('supermarkets')
+      // C. Obtener el ID real del staff para buscar su último supermercado
+      const { data: staffData } = await supabase
+        .from('supermarket_staff')
         .select('id')
         .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
         .single();
 
-      if (lastMarket) {
-        await supabase
+      if (staffData) {
+        const { data: lastMarket } = await supabase
           .from('supermarkets')
-          .update({ map_image_url: publicUrl })
-          .eq('id', lastMarket.id);
+          .select('id')
+          .eq('staff_id', staffData.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (lastMarket) {
+          await supabase
+            .from('supermarkets')
+            .update({ map_image_url: publicUrl })
+            .eq('id', lastMarket.id);
+
+          alert("¡Map uploaded successfully!");
+          if (onMapUploaded) {
+            onMapUploaded(lastMarket.id);
+          } else {
+            setView('define-zones');
+          }
+          return;
+        }
       }
 
-      alert("¡Mapa subido correctamente!");
-      // Notify parent with the market ID so it can store it before navigating
-      if (onMapUploaded && lastMarket) {
-        onMapUploaded(lastMarket.id);
-      } else {
-        setView('define-zones');
-      }
+      alert("¡Map uploaded successfully, but it could not be associated with a recent supermarket!");
+      setView('define-zones');
 
     } catch (error: any) {
       alert("Error: " + error.message);
@@ -87,45 +98,45 @@ export const UploadMap = ({ setView, session, onMapUploaded }: UploadMapProps) =
       <div className="upload-card-wrapper">
         <div className="upload-card">
           <div className="upload-header">
-          <span className="cart-icon">🛒</span>
-          <h2>MarketFind - Optimizador de Rutas</h2>
-        </div>
-
-        <div className="upload-dropzone">
-          <div className="dropzone-content">
-            {preview ? (
-              <img src={preview} alt="Preview" className="map-preview" />
-            ) : (
-              <>
-                <div className="upload-icon">⬆️</div>
-                <h3>Upload the map of your supermarket</h3>
-                <p>Upload an image of the supermarket plan to start</p>
-              </>
-            )}
+            <span className="cart-icon">🛒</span>
+            <h2>MarketFind - Optimizador de Rutas</h2>
           </div>
 
-          <input
-            type="file"
-            id="file-upload"
-            accept="image/*"
-            onChange={handleFileChange}
-            hidden
-          />
-          <label htmlFor="file-upload" className="btn-select">
-            {file ? 'Change image' : 'Select image'}
-          </label>
-        </div>
+          <div className="upload-dropzone">
+            <div className="dropzone-content">
+              {preview ? (
+                <img src={preview} alt="Preview" className="map-preview" />
+              ) : (
+                <>
+                  <div className="upload-icon">⬆️</div>
+                  <h3>Upload the map of your supermarket</h3>
+                  <p>Upload an image of the supermarket plan to start</p>
+                </>
+              )}
+            </div>
 
-        {file && (
-          <button
-            className="btn-confirm-upload"
-            onClick={handleUpload}
-            disabled={uploading}
-          >
-            {uploading ? 'Uploading...' : 'Confirm and Finish'}
-          </button>
-        )}
-      </div>
+            <input
+              type="file"
+              id="file-upload"
+              accept="image/*"
+              onChange={handleFileChange}
+              hidden
+            />
+            <label htmlFor="file-upload" className="btn-select">
+              {file ? 'Change image' : 'Select image'}
+            </label>
+          </div>
+
+          {file && (
+            <button
+              className="btn-confirm-upload"
+              onClick={handleUpload}
+              disabled={uploading}
+            >
+              {uploading ? 'Uploading...' : 'Confirm and Finish'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

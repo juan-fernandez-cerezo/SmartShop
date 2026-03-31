@@ -102,7 +102,7 @@ function App() {
       if (!session) return <Login setView={navigateTo} />;
       return <Profile setView={navigateTo} session={session} />;
     case 'manage-supermarkets':
-      if (!session || session.user.user_metadata.role !== 'Supermarket') {
+      if (!session || session.user.user_metadata.role !== 'Supermarket_Staff') {
         setView('profile');
         return null;
       }

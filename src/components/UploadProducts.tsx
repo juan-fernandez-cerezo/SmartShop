@@ -46,10 +46,19 @@ export const UploadProducts = ({ setView, session }: { setView: (v: ViewState) =
     setUploading(true);
 
     try {
+      // Primero sacamos el ID real de empleado (staff_id)
+      const { data: staffData } = await supabase
+        .from('supermarket_staff')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (!staffData) throw new Error("Staff profile not found.");
+
       const { data: market } = await supabase
         .from('supermarkets')
         .select('id')
-        .eq('user_id', session.user.id)
+        .eq('staff_id', staffData.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
