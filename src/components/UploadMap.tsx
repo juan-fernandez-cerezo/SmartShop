@@ -99,7 +99,7 @@ export const UploadMap = ({ setView, session, onMapUploaded }: UploadMapProps) =
         <div className="upload-card">
           <div className="upload-header">
             <span className="cart-icon">🛒</span>
-            <h2>MarketFind - Optimizador de Rutas</h2>
+            <h2>SmartShop</h2>
           </div>
 
           <div className="upload-dropzone">

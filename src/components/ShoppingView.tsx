@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 import './ShoppingView.css';
 import logoImg from '../assets/logo.png'; // Make sure this path corresponds to your logo
 
-export const ShoppingView = ({ setView, market, session, initialCart, onCheckout }: any) => {
+export const ShoppingView = ({ setView, market, session, initialCart, onCheckout, onBack }: any) => {
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>(initialCart || []);
   const [loading, setLoading] = useState(true);
@@ -231,7 +231,7 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
     <div className="shopping-view-container">
       {/* Top Header */}
       <header className="shopping-header">
-        <button className="btn-back-header" onClick={() => setView('shop')}>
+        <button className="btn-back-header" onClick={() => onBack ? onBack(cart) : setView('shop')}>
           <span className="icon">&#8592;</span> <span className="text">Return</span>
         </button>
         <div className="logo-container-header">

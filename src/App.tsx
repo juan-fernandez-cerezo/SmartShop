@@ -89,6 +89,10 @@ function App() {
       return <HomePage setView={navigateTo} />;
     case 'shop':
       return <Shop setView={navigateTo} session={session} onSelectMarket={(market) => {
+        // Si cambiamos de supermercado, reseteamos la lista temporal
+        if (selectedMarketId !== market.id) {
+          setCartItems([]);
+        }
         setSelectedMarketId(market.id);
         setSelectedMarket(market);
       }} />;
@@ -166,6 +170,10 @@ function App() {
           onCheckout={(items: any[]) => {
             setCartItems(items);
             setView('route-view');
+          }}
+          onBack={(items: any[]) => {
+            setCartItems(items);
+            setView('shop');
           }}
         />
       );
