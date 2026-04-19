@@ -39,13 +39,17 @@ const buildGrid = (zones: Zone[]): Uint8Array => {
 
 // ─── Zone access points (find nearest aisle) ────────────────────────────────
 
+// ─── Zone access points (find nearest aisle TOWARDS a target) ────────────────
+
 const getAccessPoint = (g: Uint8Array, cx: number, cy: number): GP => {
   if (g[gIdx(cx, cy)] === 1) return { x: cx, y: cy };
+
   const q: GP[] = [{ x: cx, y: cy }];
   const cl = new Uint8Array(GW * GH);
   cl[gIdx(cx, cy)] = 1;
   const DIRS = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]];
   let iter = 0;
+
   while (q.length && iter++ < 10000) {
     const cur = q.shift()!;
     for (const [dx, dy] of DIRS) {
@@ -59,13 +63,63 @@ const getAccessPoint = (g: Uint8Array, cx: number, cy: number): GP => {
   return { x: cx, y: cy };
 };
 
+// NUEVA función: access point dirigido hacia un target
+const getAccessPointToward = (g: Uint8Array, cx: number, cy: number, tx: number, ty: number): GP => {
+  if (g[gIdx(cx, cy)] === 1) return { x: cx, y: cy };
+
+  // BFS para encontrar TODOS los puntos caminables en el borde inmediato de la zona
+  const q: GP[] = [{ x: cx, y: cy }];
+  const cl = new Uint8Array(GW * GH);
+  cl[gIdx(cx, cy)] = 1;
+  const DIRS4 = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+  const candidates: GP[] = [];
+  let iter = 0;
+  let minDist = Infinity;
+
+  // Primero encontramos la distancia mínima del primer punto accesible (BFS)
+  const q2: GP[] = [{ x: cx, y: cy }];
+  const cl2 = new Uint8Array(GW * GH);
+  cl2[gIdx(cx, cy)] = 1;
+  const DIRS8 = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+
+  while (q2.length && iter++ < 10000) {
+    const cur = q2.shift()!;
+    for (const [dx, dy] of DIRS8) {
+      const nx = cur.x + dx, ny = cur.y + dy;
+      if (nx < 0 || nx >= GW || ny < 0 || ny >= GH) continue;
+      const nk = gIdx(nx, ny);
+      if (g[nk] === 1) {
+        const d = Math.abs(nx - cx) + Math.abs(ny - cy);
+        if (d < minDist) minDist = d;
+        candidates.push({ x: nx, y: ny });
+      }
+      if (!cl2[nk]) { cl2[nk] = 1; q2.push({ x: nx, y: ny }); }
+    }
+    // Recogemos todos los puntos a distancia <= minDist + 1
+    if (candidates.length > 0 && Math.abs(cur.x - cx) + Math.abs(cur.y - cy) > minDist + 1) break;
+  }
+
+  if (candidates.length === 0) return { x: cx, y: cy };
+
+  // De todos los candidatos en el borde de la zona, elegimos el más cercano al TARGET
+  let best = candidates[0];
+  let bestD = Math.abs(best.x - tx) + Math.abs(best.y - ty);
+  for (const c of candidates) {
+    const d = Math.abs(c.x - tx) + Math.abs(c.y - ty);
+    if (d < bestD) { bestD = d; best = c; }
+  }
+  return best;
+};
+
 // ─── A* pathfinding ───────────────────────────────────────────────────────────
 
 const astar = (g: Uint8Array, az: Zone, bz: Zone): GP[] => {
   const ca = zoneGP(az);
   const cb = zoneGP(bz);
-  const start = getAccessPoint(g, ca.x, ca.y);
-  const end = getAccessPoint(g, cb.x, cb.y);
+
+  // ← CAMBIO: cada extremo busca su punto de acceso HACIA el otro extremo
+  const start = getAccessPointToward(g, ca.x, ca.y, cb.x, cb.y);
+  const end = getAccessPointToward(g, cb.x, cb.y, ca.x, ca.y);
 
   if (start.x === end.x && start.y === end.y) {
     return (ca.x === cb.x && ca.y === cb.y) ? [ca] : [ca, start, cb];

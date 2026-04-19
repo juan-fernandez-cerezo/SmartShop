@@ -284,7 +284,14 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
               filteredProducts.map((p) => (
                 <div key={p.id} className="product-card">
                   <div className="product-image-wrap">
-                    <img src={p.image_url || 'https://via.placeholder.com/150'} alt={p.name} />
+                    <img 
+                      src={p.image_url || 'https://via.placeholder.com/150'} 
+                      alt={p.name} 
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150';
+                      }}
+                    />
                   </div>
                   <div className="product-info-wrap">
                     <h4 className="product-name">{p.name}</h4>
@@ -328,7 +335,14 @@ export const ShoppingView = ({ setView, market, session, initialCart, onCheckout
               cart.map(item => (
                 <div key={item.id} className="cart-item-row">
                   <div className="cart-item-image-mini">
-                    <img src={item.image_url || 'https://via.placeholder.com/150'} alt={item.name} />
+                    <img 
+                      src={item.image_url || 'https://via.placeholder.com/150'} 
+                      alt={item.name}
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150';
+                      }}
+                    />
                   </div>
                   <div className="cart-item-main">
                     <div className="cart-item-details">

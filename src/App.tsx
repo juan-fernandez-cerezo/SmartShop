@@ -38,8 +38,8 @@ function HomePage({ setView }: { setView: (view: ViewState) => void }) {
         <button className="btn-home login-register" onClick={() => setView('login')}>
           Login/Register
         </button>
+        <p className="footer-note">*To save your shopping lists, please log in.</p>
       </div>
-      <p className="footer-note">*To save your shopping lists, please log in.</p>
     </div>
   );
 }

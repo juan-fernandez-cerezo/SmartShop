@@ -156,12 +156,12 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
                 🛒 Start Shopping
               </button>
               <button className="btn-manage" onClick={() => setView('saved-lists')} style={{ marginLeft: '10px' }}>
-                📝 Shopping Lists
+                📝 Saved Shopping Lists
               </button>
             </>
           ) : (
             <button className="btn-manage" onClick={() => setView('manage-supermarkets')}>
-              📦 Manage Supermarket
+              📦 Manage Supermarkets
             </button>
           )}
           <button className="btn-logout" onClick={handleLogout}>Log out</button>

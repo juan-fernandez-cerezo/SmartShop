@@ -131,10 +131,12 @@
   border-radius: 8px;
   padding: 10px 16px;
   font-size: 13px;
-  color: #1d4ed8;
+  color: black;
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 35%;
+  font-weight: bold;
 }
 
 .dz-map-container {

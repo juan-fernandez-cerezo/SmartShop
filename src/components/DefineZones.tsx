@@ -249,12 +249,12 @@ export const DefineZones = ({ setView, supermarketId }: Props) => {
       <div className="dz-body">
         {/* Map Canvas */}
         <div className="dz-map-panel">
-          <div className="dz-hint"><span>🖱️</span> Haz clic y arrastra para definir una zona</div>
+          <div className="dz-hint"><span>🖱️</span> Click and drag to define a zone</div>
 
           {mapUrl ? (
-            <div className="dz-map-container" ref={containerRef} 
-                 onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
-                 onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleMouseUp} onTouchCancel={handleMouseUp}>
+            <div className="dz-map-container" ref={containerRef}
+              onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleMouseUp} onTouchCancel={handleMouseUp}>
               <img ref={imgRef} src={mapUrl} alt="Mapa del supermercado" className="dz-map-img" draggable={false} />
               {zones.map(renderZoneOverlay)}
               {renderDrawingRect()}

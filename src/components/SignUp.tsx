@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import logoImg from '../assets/logo.png';
+import privacyDoc from '../assets/PrivacyPolicySmartShop.pdf';
 import './SignUp.css';
 
 // Dentro de Login.tsx y SignUp.tsx
@@ -13,6 +14,7 @@ export const SignUp = ({ setView }: ComponentProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'Consumer' | 'Supermarket_Staff'>('Consumer');
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
 
   // Campos dinámicos
   const [firstName, setFirstName] = useState('');
@@ -75,7 +77,21 @@ export const SignUp = ({ setView }: ComponentProps) => {
               <input placeholder="Last name" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
             </div>
 
-            <button type="submit" className="btn-auth">Register</button>
+            <div className="privacy-policy-row" style={{ textAlign: 'left', marginBottom: '15px', display: 'flex', alignItems: 'center', fontSize: '13px', color: '#666' }}>
+              <input
+                type="checkbox"
+                id="privacy"
+                required
+                style={{ width: 'auto', marginRight: '8px' }}
+                checked={agreePrivacy}
+                onChange={(e) => setAgreePrivacy(e.target.checked)}
+              />
+              <label htmlFor="privacy" style={{ marginLeft: 0, marginBottom: 0 }}>
+                I have read and agree to the <a href={privacyDoc} download="Privacy_Policy_SmartShop.pdf" target="_blank" rel="noreferrer" style={{ color: '#4285f4', textDecoration: 'underline' }}>privacy policy</a>
+              </label>
+            </div>
+
+            <button type="submit" className="btn-auth" disabled={!agreePrivacy} style={{ opacity: agreePrivacy ? 1 : 0.6 }}>Register</button>
           </form>
 
           <div className="auth-footer">

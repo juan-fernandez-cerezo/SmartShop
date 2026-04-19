@@ -71,7 +71,6 @@ export const RegisterMarket = ({ setView, session }: { setView: (v: ViewState) =
         </div>
 
         <div className="register-card">
-          <p className="register-subtitle">Please select the market details</p>
 
           <form onSubmit={handleRegister}>
             <div className="input-group">
@@ -112,7 +111,7 @@ export const RegisterMarket = ({ setView, session }: { setView: (v: ViewState) =
           </form>
 
           <button className="btn-back-link" onClick={() => setView('manage-supermarkets')}>
-            ← Back to panel
+            ← Back to Management Panel
           </button>
         </div>
       </div>

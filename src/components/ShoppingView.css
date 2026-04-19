@@ -27,13 +27,13 @@
 }
 
 .btn-back-header {
-    background: white;
-    border: 1px solid #ccc;
+    background: transparent;
+    border: 1px solid #cbd5e1;
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 500;
-    color: #334155;
+    font-weight: 600;
+    color: black;
     transition: background 0.2s;
 }
 

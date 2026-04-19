@@ -44,15 +44,15 @@ export const SavedLists = ({ setView, session, filterMarketId, onEditList }: Sav
             supermarkets ( id, name, location, map_image_url )
           `)
           .eq('consumer_id', consumer.id);
-          
+
         if (filterMarketId) {
           query = query.eq('sup_id', filterMarketId);
         }
-        
+
         const { data: userLists, error } = await query.order('id', { ascending: false });
 
         if (error) throw error;
-        
+
         setLists(userLists || []);
       } catch (err) {
         console.error("Error fetching lists", err);
@@ -98,35 +98,35 @@ export const SavedLists = ({ setView, session, filterMarketId, onEditList }: Sav
     <div className="saved-lists-container">
       <header className="saved-lists-header">
         <button className="btn-back-header" onClick={() => setView('profile')}>
-          <span className="icon">&#8592;</span> <span className="text">Volver</span>
+          <span className="icon">&#8592;</span> <span className="text">Return</span>
         </button>
         <div className="logo-container-header">
-           <img src={logoImg} alt="SmartShop Logo" className="logo-header" />
+          <img src={logoImg} alt="SmartShop Logo" className="logo-header" />
         </div>
         <div className="header-right-actions">
-           <button className="btn-profile-header" onClick={() => setView('profile')}>
-             <span className="icon">👤</span> <span className="text">Perfil</span>
-           </button>
+          <button className="btn-profile-header" onClick={() => setView('profile')}>
+            <span className="icon">👤</span> <span className="text">Profile</span>
+          </button>
         </div>
       </header>
 
       <div className="saved-lists-content">
-        <h2>Mis Listas de la Compra</h2>
-        
+        <h2>Saved Shopping lists</h2>
+
         {loading ? (
-          <p>Cargando listas...</p>
+          <p>Loading lists...</p>
         ) : lists.length > 0 ? (
           <div className="lists-grid">
             {lists.map(list => (
               <div key={list.id} className="list-card">
                 <div className="list-card-details">
                   <h3>{list.list_name}</h3>
-                  <p><strong>Supermercado:</strong> {list.supermarkets?.name || 'Desconocido'}</p>
-                  <p><strong>Dirección:</strong> {list.supermarkets?.location || 'Desconocida'}</p>
+                  <p><strong>Supermarket:</strong> {list.supermarkets?.name || 'Unknown'}</p>
+                  <p><strong>Address:</strong> {list.supermarkets?.location || 'Unknown'}</p>
                 </div>
                 <div className="list-card-actions">
                   <button className="btn-edit-list" onClick={() => handleEditList(list)}>
-                    Ver / Editar Lista
+                    View / Edit List
                   </button>
                 </div>
               </div>
@@ -134,9 +134,9 @@ export const SavedLists = ({ setView, session, filterMarketId, onEditList }: Sav
           </div>
         ) : (
           <div className="no-lists-msg">
-            <p>No tienes listas guardadas.</p>
+            <p>You don't have any saved lists.</p>
             <button className="btn-start-shopping" onClick={() => setView('shop')}>
-               Comenzar a comprar
+              Start shopping
             </button>
           </div>
         )}

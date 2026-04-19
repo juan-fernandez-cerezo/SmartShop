@@ -26,11 +26,9 @@
 
 .register-logo {
   width: 120px;
-  background: white;
-  border-radius: 50%;
-  padding: 10px;
   margin-bottom: 20px;
 }
+
 
 .register-header-blue {
   background-color: #1a5f7a;
@@ -39,7 +37,7 @@
   font-size: 20px;
   font-weight: bold;
   border-radius: 4px;
-  margin-bottom: -5px;
+  margin-bottom: 10px;
   /* Para que solape ligeramente con la tarjeta blanca */
   z-index: 1;
 }
@@ -100,10 +98,11 @@
 .btn-back-link {
   background: none;
   border: none;
-  color: #666;
+  color: black;
   margin-top: 20px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
 }
 
 /* Image Preview */
