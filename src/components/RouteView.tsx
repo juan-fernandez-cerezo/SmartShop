@@ -37,41 +37,13 @@ const buildGrid = (zones: Zone[]): Uint8Array => {
   return g;
 };
 
-// ─── Zone access points (find nearest aisle) ────────────────────────────────
 
-// ─── Zone access points (find nearest aisle TOWARDS a target) ────────────────
-
-const getAccessPoint = (g: Uint8Array, cx: number, cy: number): GP => {
-  if (g[gIdx(cx, cy)] === 1) return { x: cx, y: cy };
-
-  const q: GP[] = [{ x: cx, y: cy }];
-  const cl = new Uint8Array(GW * GH);
-  cl[gIdx(cx, cy)] = 1;
-  const DIRS = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]];
-  let iter = 0;
-
-  while (q.length && iter++ < 10000) {
-    const cur = q.shift()!;
-    for (const [dx, dy] of DIRS) {
-      const nx = cur.x + dx, ny = cur.y + dy;
-      if (nx < 0 || nx >= GW || ny < 0 || ny >= GH) continue;
-      const nk = gIdx(nx, ny);
-      if (g[nk] === 1) return { x: nx, y: ny };
-      if (!cl[nk]) { cl[nk] = 1; q.push({ x: nx, y: ny }); }
-    }
-  }
-  return { x: cx, y: cy };
-};
 
 // NUEVA función: access point dirigido hacia un target
 const getAccessPointToward = (g: Uint8Array, cx: number, cy: number, tx: number, ty: number): GP => {
   if (g[gIdx(cx, cy)] === 1) return { x: cx, y: cy };
 
   // BFS para encontrar TODOS los puntos caminables en el borde inmediato de la zona
-  const q: GP[] = [{ x: cx, y: cy }];
-  const cl = new Uint8Array(GW * GH);
-  cl[gIdx(cx, cy)] = 1;
-  const DIRS4 = [[0, 1], [1, 0], [0, -1], [-1, 0]];
   const candidates: GP[] = [];
   let iter = 0;
   let minDist = Infinity;
