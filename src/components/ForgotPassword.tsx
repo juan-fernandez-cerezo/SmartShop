@@ -9,7 +9,7 @@ export const ForgotPassword = ({ setView }: { setView: (v: any) => void }) => {
   const handleResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: window.location.origin,
     });
 
     if (error) alert(error.message);
