@@ -62,7 +62,7 @@ export const Profile = ({ setView, session }: { setView: (v: ViewState) => void,
       if (dbError) {
         alert("Error en Base de Datos: " + dbError.message);
       } else {
-        alert("¡Perfil actualizado correctamente!");
+        alert("Profile updated successfully!");
         setIsEditing(false);
         // Recargamos para que la App lea los nuevos metadatos de la sesión
         window.location.reload();
